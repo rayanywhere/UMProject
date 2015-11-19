@@ -3,7 +3,7 @@ var renderer = require("./renderer.js");
 var saver = require("./saver.js");
 
 if (process.argv.length < 5) {
-	console.error("usage: node " + process.argv[0] + " <umodel.core.json> <language> <target_folder>");
+	console.error("usage: node " + process.argv[0] + " <UM.Core.json> <language> <target_folder>");
 	process.exit(1);
 }
 

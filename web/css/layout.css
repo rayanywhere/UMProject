@@ -20,6 +20,20 @@ img{display:block; margin:0; padding:0; border:none;}
 .nostart {list-style-type:none; margin:0; padding:0;}
 .clear{clear: both;}
 .draggable {z-index:10000;}
+.droparea {
+	border:1px dashed lightgrey;
+	background:rgba(245,245,245,0.8);
+}
+.droparea.empty {
+	background:url(/images/drop.png) no-repeat center center rgba(245,245,245,0.8);
+}
+.droparea.small {
+	border:1px dashed lightgrey;
+	background:rgba(225,225,225,1);
+}
+.droparea.small.empty {
+	background:url(/images/drop_small.png) no-repeat center center rgba(225,225,225,1);
+}
 br.clear{clear:both; margin-top:-15px;}
 
 a{outline:none; text-decoration:none;}
@@ -128,6 +142,30 @@ ul{ margin:0;padding:0;list-style:none;overflow:hidden; }
 	-ms-filter:contrast(200%);
 }
 
+#tree > h2 > .widget.draggable {
+	background-size:cover;
+	cursor:pointer;
+	border:1px solid transparent;
+	filter:contrast(100%);
+	-webkit-filter:contrast(100%);
+	-moz-filter:contrast(100%);
+	-o-filter:contrast(100%);
+	-ms-filter:contrast(100%);
+	float:right;
+	width:20px;
+  	height:20px;
+	background-image:url('/images/tree.png');
+}
+
+#tree > h2 > .widget.draggable:hover {
+    border:1px solid lightgrey;
+	filter:contrast(200%);
+	-webkit-filter:contrast(200%);
+	-moz-filter:contrast(200%);
+	-o-filter:contrast(200%);
+	-ms-filter:contrast(200%);
+}
+
 #toolbar .widget.namespace,#editor .widget.namespace {
 	background-image:url('/images/namespace.png');
 }
@@ -148,12 +186,16 @@ ul{ margin:0;padding:0;list-style:none;overflow:hidden; }
 	background-image:url('/images/trash.png');
 }
 
-#toolbar .widget.download {
-	background-image:url('/images/download.png');
+#toolbar .widget.transfer {
+	background-image:url('/images/transfer.png');
 }
 
-#toolbar .widget.upload {
-	background-image:url('/images/upload.png');
+#toolbar .widget.version {
+	background-image:url('/images/version.png');
+}
+
+#toolbar .widget.interface {
+	background-image:url('/images/interface.png');
 }
 
 /* ----------------------------------------------Wrapper-------------------------------------*/
@@ -274,9 +316,9 @@ div.wrapper h1, div.wrapper h2, div.wrapper h3, div.wrapper h4, div.wrapper h5, 
 }
 
 #editor > div {
-	border:2px dashed lightgrey;
-	background-color:rgba(245,245,245,0.8);
 	min-height:400px;
+	background-color:rgba(245,245,245,0.8);
+	border:1px dashed lightgrey;
 }
 
 #editor ul li.title {
@@ -322,12 +364,10 @@ div.wrapper h1, div.wrapper h2, div.wrapper h3, div.wrapper h4, div.wrapper h5, 
 	display:inline-block;
 }
 
-#editor .attribute .data.value > div > .droppable {
+#editor .attribute .data.value > div > .droparea {
 	min-width:70px;
 	padding:0 5px;
 	height:20px;
-	background-color:rgba(235,235,235,1);
-	border:1px dashed lightgrey;
 }
 
 #editor .attribute .data.value > div input,#editor .attribute .data.filter > div input {
@@ -343,10 +383,10 @@ div.wrapper h1, div.wrapper h2, div.wrapper h3, div.wrapper h4, div.wrapper h5, 
 }
 
 #tree > div {
-	background-color:rgba(245,245,245,0.8);
 	min-height:400px;
 	overflow:hidden;
-	border:2px solid lightgrey;
+	background-color:rgba(245,245,245,0.8);
+	border:1px dashed lightgrey;
 }
 
 #tree .default {

@@ -1,10 +1,10 @@
-package com.vanchu.lib.umodel;
+package com.vanchu.lib.core.um;
 import java.util.LinkedList;
 import java.util.regex.Pattern;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
-public class UModel {
+public class UMCore {
 	{% for namespace in namespaces -%}
 	public static final class {{ namespace.name }} {
 		{% for object in namespace.objects %}

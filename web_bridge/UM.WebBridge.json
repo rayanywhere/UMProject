@@ -1,0 +1,48 @@
+[
+	{
+		"name":"1.1",
+		"comment":"Common namespace",
+		"interfaces":[
+			{
+				"name":"getUser",
+				"comment":"get user info",
+				"host":"10.10.1.46",
+				"port":80,
+				"protocol":"http",
+				"timeout":30,
+				"request":{
+					"namespace":"Network",
+					"object":"UserInfoRequest"
+				},
+				"response":{
+					"namespace":"Network",
+					"object":"UserInfoResponse"
+				}
+			}
+		]
+	},
+	{
+		"name":"1.0",
+		"comment":"Common namespace",
+		"interfaces":[
+			{
+				"name":"getUser",
+				"comment":"get user info",
+				"host":"10.10.1.46",
+				"port":80,
+				"protocol":"http",
+				"timeout":30,
+				"request":{
+					"namespace":"Network",
+					"object":"UserInfoRequest"
+				},
+				"response":{
+					"namespace":"Network",
+					"object":"UserInfoResponse"
+				}
+			}
+		]
+	}
+
+]
+

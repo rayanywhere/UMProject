@@ -11,7 +11,7 @@ var ToolbarMgr = {
 						if (ui.draggable.hasClass("editor")) {
 							EditorMgr.show("default");
 						}
-						else if (ui.draggable.hasClass("tree")) {
+						else if (ui.draggable.hasClass("tree-item")) {
 							var treePath = new TreePath(ui.draggable);
 							switch (treePath.type) {
 								case "NAMESPACE":
@@ -28,8 +28,30 @@ var ToolbarMgr = {
 									break;
 							}
 						}
+						else if (ui.draggable.hasClass("tree")) {
+							DataMgr.load([]);
+						}
 					}
 				});
+
+		$("#toolbar .widget.transfer").droppable({
+					accept: "#tree > h2 > .draggable",
+					hoverClass: "ui-state-highlight",
+					drop: function(event, ui) {
+						DataMgr.download();
+					}
+				});
+
+		var emptyHandler = function(evt) {
+			evt.stopPropagation();
+			evt.preventDefault();
+		};
+
+		$("#toolbar .widget.transfer").on("dragenter", emptyHandler).on("dragover", emptyHandler).on("drop", function(evt) {
+					emptyHandler(evt);
+					DataMgr.upload(evt.originalEvent.dataTransfer.files[0]);
+				});
+		$(document).on("dragenter", emptyHandler).on("dragover", emptyHandler).on("drop", emptyHandler);
 	},
 	_updateDisabledWidgets:function(widgets) {
 		$("#toolbar .widget").removeClass("ui-state-disabled");

@@ -1,6 +1,6 @@
-#import "UModel.h"
+#import "UMCore.h"
 
-@implementation UModel
+@implementation UMCore
 - (instancetype)initWithJson:(NSString *)json {
 	return [super init];
 }
@@ -12,26 +12,26 @@
 {% for namespace in namespaces %}
 {% for object in namespace.objects %}
 
-@implementation UM{{ namespace.name }}{{ object.name }}
+@implementation UMCore{{ namespace.name }}{{ object.name }}
 - (instancetype)init {
 	if (self = [super init]) {
 		{% for attribute in object.attributes -%}
 		{%- if attribute|um_attribute_is("STRING") -%}
 		{%- if attribute.value|um_value_is("object") -%}
-		_{{ attribute.name }} = kUM{{ attribute.value.namespace }}{{ attribute.value.object }}{{ attribute.value.constant }};
+		_{{ attribute.name }} = kUMCore{{ attribute.value.namespace }}{{ attribute.value.object }}{{ attribute.value.constant }};
 		{%- else -%}
 		_{{ attribute.name }} = @"{{ attribute.value }}";
 		{%- endif -%}
 		{%- elseif attribute|um_attribute_is("FLOAT") || attribute|um_attribute_is("BOOLEAN") || attribute|um_attribute_is("INTEGER") -%}
 		{%- if attribute.value|um_value_is("object") -%}
-		_{{ attribute.name }} = kUM{{ attribute.value.namespace }}{{ attribute.value.object }}{{ attribute.value.constant }};
+		_{{ attribute.name }} = kUMCore{{ attribute.value.namespace }}{{ attribute.value.object }}{{ attribute.value.constant }};
 		{%- else -%}
 		_{{ attribute.name }} = {{ attribute.value }};
 		{%- endif -%}
 		{%- elseif attribute|um_attribute_is("OBJECT") -%}
-		_{{ attribute.name }} = [UM{{ attribute.value.namespace }}{{ attribute.value.object }} new];
+		_{{ attribute.name }} = [UMCore{{ attribute.value.namespace }}{{ attribute.value.object }} new];
 		{%- elseif attribute|um_attribute_is("ARRAY") -%}
-		_{{ attribute.name }} = [NSArray<UM{{ attribute.value.namespace }}{{ attribute.value.object }} *> array];
+		_{{ attribute.name }} = [NSArray<UMCore{{ attribute.value.namespace }}{{ attribute.value.object }} *> array];
 		{%- endif -%}
 		{%- endfor %}
 	}
@@ -54,11 +54,11 @@
 			{%- elseif attribute|um_attribute_is("INTEGER") -%}
 			_{{ attribute.name }} = ((NSNumber *)attribute).integerValue;
 			{%- elseif attribute|um_attribute_is("OBJECT") -%}
-			_{{ attribute.name }} = [[UM{{ attribute.value.namespace }}{{ attribute.value.object }} alloc] initWithJson:attribute];
+			_{{ attribute.name }} = [[UMCore{{ attribute.value.namespace }}{{ attribute.value.object }} alloc] initWithJson:attribute];
 			{%- elseif attribute|um_attribute_is("ARRAY") -%}
-			NSMutableArray<UM{{ attribute.value.namespace }}{{ attribute.value.object }} *> *array = [NSMutableArray<UM{{ attribute.value.namespace }}{{ attribute.value.object }} *> array];
+			NSMutableArray<UMCore{{ attribute.value.namespace }}{{ attribute.value.object }} *> *array = [NSMutableArray<UMCore{{ attribute.value.namespace }}{{ attribute.value.object }} *> array];
 			for(NSDictionary *item in attribute) {
-				[array addObject:[[UM{{ attribute.value.namespace }}{{ attribute.value.object }} alloc] initWithJson:item]];
+				[array addObject:[[UMCore{{ attribute.value.namespace }}{{ attribute.value.object }} alloc] initWithJson:item]];
 			}
 			_{{ attribute.name }} = array;
 			{%- endif %}
@@ -66,20 +66,20 @@
 		else {
 			{% if attribute|um_attribute_is("STRING") -%}
 			{%- if attribute.value|um_value_is("object") -%}
-			_{{ attribute.name }} = kUM{{ attribute.value.namespace }}{{ attribute.value.object }}{{ attribute.value.constant }};
+			_{{ attribute.name }} = kUMCore{{ attribute.value.namespace }}{{ attribute.value.object }}{{ attribute.value.constant }};
 			{%- else -%}
 			_{{ attribute.name }} = @"{{ attribute.value }}";
 			{%- endif -%}
 			{%- elseif attribute|um_attribute_is("FLOAT") || attribute|um_attribute_is("BOOLEAN") || attribute|um_attribute_is("INTEGER") -%}
 			{%- if attribute.value|um_value_is("object") -%}
-			_{{ attribute.name }} = kUM{{ attribute.value.namespace }}{{ attribute.value.object }}{{ attribute.value.constant }};
+			_{{ attribute.name }} = kUMCore{{ attribute.value.namespace }}{{ attribute.value.object }}{{ attribute.value.constant }};
 			{%- else -%}
 			_{{ attribute.name }} = {{ attribute.value }};
 			{%- endif -%}
 			{%- elseif attribute|um_attribute_is("OBJECT") -%}
-			_{{ attribute.name }} = [UM{{ attribute.value.namespace }}{{ attribute.value.object }} new];
+			_{{ attribute.name }} = [UMCore{{ attribute.value.namespace }}{{ attribute.value.object }} new];
 			{%- elseif attribute|um_attribute_is("ARRAY") -%}
-			_{{ attribute.name }} = [NSArray<UM{{ attribute.value.namespace }}{{ attribute.value.object }} *> array];
+			_{{ attribute.name }} = [NSArray<UMCore{{ attribute.value.namespace }}{{ attribute.value.object }} *> array];
 			{%- endif -%}
 		}
 	{%- endfor %}
@@ -100,7 +100,7 @@
 	{%- elseif attribute|um_attribute_is("ARRAY") -%}
 	{
 		NSMutableArray *array = [NSMutableArray array];
-		for(UM{{ attribute.value.namespace}}{{ attribute.value.object }} *item in _{{ attribute.name }}) {
+		for(UMCore{{ attribute.value.namespace}}{{ attribute.value.object }} *item in _{{ attribute.name }}) {
 			[array addObject:[item encodeToJson]];
 		}
 		[json setObject:array forKey:@"{{ attribute.name }}"];
@@ -111,18 +111,18 @@
 }
 
 {% for attribute in object.attributes %}
-- (void)set{{ attribute.name|ucfirst }}:({% if attribute|um_attribute_is("STRING") %}NSString *{% elseif attribute|um_attribute_is("INTEGER") %}NSInteger {% elseif attribute|um_attribute_is("FLOAT") %}double {% elseif attribute|um_attribute_is("BOOLEAN") %}BOOL {% elseif attribute|um_attribute_is("OBJECT") || attribute|um_attribute_is("ARRAY") %}UM{{attribute.value.namespace}}{{attribute.value.object}} *{% endif %}){{ attribute.name }} {
+- (void)set{{ attribute.name|ucfirst }}:({% if attribute|um_attribute_is("STRING") %}NSString *{% elseif attribute|um_attribute_is("INTEGER") %}NSInteger {% elseif attribute|um_attribute_is("FLOAT") %}double {% elseif attribute|um_attribute_is("BOOLEAN") %}BOOL {% elseif attribute|um_attribute_is("OBJECT") || attribute|um_attribute_is("ARRAY") %}UMCore{{attribute.value.namespace}}{{attribute.value.object}} *{% endif %}){{ attribute.name }} {
 	{% if attribute.filter -%}
 	{%- if attribute.filter|um_filter_is("object") -%}
 	if (({{ attribute.name }} <{% if !attribute.filter.include.lower %}={% endif %} {{ attribute.filter.range.lower }})
 		|| ({{ attribute.name}} >{% if !$attribute.filter.include.upper %}={% endif %} {{ attribute.filter.range.upper }})) {
-		[NSException raise:@"UModel" format:@"out of range"];
+		[NSException raise:@"UMCore" format:@"out of range"];
 		return;
 	}
 	{%- else -%}
 	NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"{{ attribute.filter }}" options:0 error:nil];
 	if (![regex numberOfMatchesInString:{{ attribute.name }} options:0 range:NSMakeRange(0, {{ attribute.name }}.length)]) {
-		[NSException raise:@"UModel" format:@"mismatch regex"];
+		[NSException raise:@"UMCore" format:@"mismatch regex"];
 		return;
 	}
 	{%- endif -%}

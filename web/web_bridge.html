@@ -39,8 +39,8 @@
 		</div>
 		<div id="topnav">
 			<ul>
-				<li class="active"><a href="index.html">Core</a></li>
-				<li><a href="javascript:void(0)">Web</a></li>
+				<li><a href="core.html">Core</a></li>
+				<li class="active"><a href="web_bridge.html">Web</a></li>
 				<li class="last"><a href="javascript:void(0)">Database</a></li>
 			</ul>
 		</div>
@@ -51,13 +51,10 @@
 <div class="wrapper col2">
 	<div id="toolbar">
 		<ul>
-			<li class="first fl_left"><div name="namespace" class="toolbar widget draggable namespace" title="namespace"></div></li>
-			<li class="fl_left"><div name="object" class="toolbar widget draggable object" title="object"></div></li>
-			<li class="fl_left"><div name="constant" class="toolbar widget draggable constant" title="constant"></div></li>
-			<li class="fl_left"><div name="attribute" class="toolbar widget draggable attribute" title="attribute"></div></li>
+			<li class="first fl_left"><div name="version" class="toolbar widget draggable version" title="version"></div></li>
+			<li class="fl_left"><div name="interface" class="toolbar widget draggable interface" title="interface"></div></li>
 			<li class="fl_right"><div name="trash" class="toobar widget trash" title="Drag & drop to delete an widget"></div></li>
-			<li class="fl_right" onclick="DataMgr.download()"><div name="download" class="toobar widget download" title="Download as UM.Core.json"></div></li>
-			<li class="fl_right" onclick="$('#localfile').click();"><div name="upload" class="toobar widget upload" title="Upload local UM.Core.json"></div></li>
+            <li class="fl_right"><div name="transfer" class="toobar widget transfer" title="Transfer in & out the UM.Core.json"></div></li>
 		<li class="clear"></li>
 		</ul>
 	</div>
@@ -67,10 +64,7 @@
 	<div id="container">
 		<div id="editor">
 			<h1><span>Editor - Getting Started</span><div class="widget draggable editor" /></h1>
-			<div name="default" class="ui-corner-all default">
-				<img src="/images/drop.png"/>
-				<span>Drag & Drop a widget from above here to start</span>
-			</div>
+			<div name="default" class="ui-corner-all default droparea empty"></div>
 			<div class="ui-corner-all editor namespace">
 				<ul>
 					<li class="title name">Name</li>
@@ -139,12 +133,12 @@
 					<li class="data value" style="display:none;">
 						<div class="integer">
 							<input type="number" placeholder="no value" />
-							<div class="ui-corner-all droppable integer" style="display:none;"></div>
+							<div class="ui-corner-all integer" style="display:none;"></div>
 							<label><input type="checkbox" onclick="EditorMgr.AttributeMgr.onReferenceToggled('integer');"/>reference</label>
 						</div>
 						<div class="float">
 							<input type="number" placeholder="no value" />
-							<div class="ui-corner-all droppable float" style="display:none;"></div>
+							<div class="ui-corner-all float" style="display:none;"></div>
 							<label><input type="checkbox" onclick="EditorMgr.AttributeMgr.onReferenceToggled('float');"/>reference</label>
 						</div>
 						<div class="boolean">
@@ -152,19 +146,19 @@
 								<option value="false">false</option>
 								<option value="true">true</option>
 							</select>
-							<div class="ui-corner-all droppable boolean" style="display:none;"></div>
+							<div class="ui-corner-all boolean" style="display:none;"></div>
 							<label><input type="checkbox" onclick="EditorMgr.AttributeMgr.onReferenceToggled('boolean');"/>reference</label>
 						</div>
 						<div class="string">
 							<input type="text" placeholder="no value"/>
-							<div class="ui-corner-all droppable string" style="display:none;"></div>
+							<div class="ui-corner-all string" style="display:none;"></div>
 							<label><input type="checkbox" onclick="EditorMgr.AttributeMgr.onReferenceToggled('string');"/>reference</label>
 						</div>
 						<div class="object">
-							<div class="ui-corner-all droppable object"></div>
+							<div class="ui-corner-all object"></div>
 						</div>
 						<div class="array">
-							<div class="ui-corner-all droppable object"></div>
+							<div class="ui-corner-all object"></div>
 						</div>
 					</li>
 					<li class="title filter" style="display:none;">Filter</li>
@@ -192,11 +186,8 @@
 			</div>
 		</div>
 		<div id="tree">
-			<h2>Model Tree Layout</h2>
-			<div class="default">
-				<img class="droppable" src="/images/drop.png"/>
-				<span>Drag & Drop a widget from editor here</span>
-			</div>
+			<h2><span>Model Tree Layout</span><div class="widget draggable tree" /></h2>
+			<div class="default droparea empty"></div>
 			<div class="namespaces" style="display:none;"/>
 				<h3 class="template widget tree namespace"></h3>
 				<div class="template" style="padding:0" onclick="TreeMgr.select(null, event)">

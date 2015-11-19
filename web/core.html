@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="EN" lang="EN" dir="ltr">
+<head profile="http://gmpg.org/xfn/11">
+<title>Project UModel | The "U" Solution for data modeling world</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="imagetoolbar" content="no" />
+<link rel="stylesheet" href="css/layout.css" type="text/css" />
+<link rel="stylesheet" href="js/jquery-ui/themes/smoothness/jquery-ui.css" type="text/css" />
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.slidepanel.setup.js"></script>
+<script type="text/javascript" src="js/jquery-ui/jquery-ui.min.js"></script>
+<script type="text/javascript" src="js/logic/notification_center.js"></script>
+<script type="text/javascript" src="js/logic/toolbar_mgr.js"></script>
+<script type="text/javascript" src="js/logic/editor_mgr.js"></script>
+<script type="text/javascript" src="js/logic/tree_mgr.js"></script>
+<script type="text/javascript" src="js/logic/data_mgr.js"></script>
+<script type="text/javascript" src="js/FileSaver.min.js"></script>
+<script>
+	$(function() {
+				DataMgr.init();
+				ToolbarMgr.init();	
+				EditorMgr.init();
+				TreeMgr.init();
+				$(".widget.draggable").draggable({revert:true, revertDuration:0, helper:"clone"});
+
+				$("#localfile").on("change", function(evt) {
+					DataMgr.upload(evt.target.files[0]);
+				});
+			});
+</script>
+</head>
+<body>
+<!-- ####################################################################################################### -->
+<div class="wrapper col1">
+	<div id="header">
+		<div id="logo">
+			<h1><a href="#">Project UModel</a></h1>
+			<p>The "U" Solution for data modeling world</p>
+		</div>
+		<div id="topnav">
+			<ul>
+				<li class="active"><a href="core.html">Core</a></li>
+				<li><a href="web_bridge.html">Web</a></li>
+				<li class="last"><a href="javascript:void(0)">Database</a></li>
+			</ul>
+		</div>
+		<br class="clear" />
+	</div>
+</div>
+<!-- ####################################################################################################### -->
+<div class="wrapper col2">
+	<div id="toolbar">
+		<ul>
+			<li class="first fl_left"><div name="namespace" class="toolbar widget draggable namespace" title="namespace"></div></li>
+			<li class="fl_left"><div name="object" class="toolbar widget draggable object" title="object"></div></li>
+			<li class="fl_left"><div name="constant" class="toolbar widget draggable constant" title="constant"></div></li>
+			<li class="fl_left"><div name="attribute" class="toolbar widget draggable attribute" title="attribute"></div></li>
+			<li class="fl_right"><div name="trash" class="toobar widget trash" title="Drag & drop to delete an widget"></div></li>
+			<li class="fl_right"><div name="transfer" class="toobar widget transfer" title="Transfer in & out the UM.Core.json"></div></li>
+		<li class="clear"></li>
+		</ul>
+	</div>
+</div>
+<!-- ####################################################################################################### -->
+<div class="wrapper col3">
+	<div id="container">
+		<div id="editor">
+			<h1><span>Editor - Getting Started</span><div class="widget draggable editor" /></h1>
+			<div name="default" class="ui-corner-all default droparea empty"></div>
+			<div class="ui-corner-all editor namespace">
+				<ul>
+					<li class="title name">Name</li>
+					<li class="data name"><input class="name" type="text" placeholder="the name of the namespace"/></li>
+					<li class="title comment">Comment</li>
+					<li class="data comment"><textarea class="comment" placeholder="no comment"></textarea></li>
+				</ul>
+			</div>
+			<div class="ui-corner-all editor object">
+				<ul>
+					<li class="title name">Name</li>
+					<li class="data name"><input class="name" type="text" placeholder="the name of the object"/></li>
+					<li class="title comment">Comment</li>
+					<li class="data comment"><textarea class="comment" placeholder="no comment"></textarea></li>
+				</ul>
+			</div>
+			<div class="ui-corner-all editor constant">
+				<ul>
+					<li class="title name">Name</li>
+					<li class="data name"><input class="name" type="text" placeholder="the name of the constant"/></li>
+					<li class="title comment">Comment</li>
+					<li class="data comment"><textarea class="comment" placeholder="no comment"></textarea></li>
+					<li class="title type">Type</li>
+					<li class="data type">
+						<label><input type="radio" name="constant_type" value="INTEGER" onclick="EditorMgr.ConstantMgr.onTypeChanged();"/>Integer</label>
+						<label><input type="radio" name="constant_type" value="FLOAT" onclick="EditorMgr.ConstantMgr.onTypeChanged();"/>Float</label>
+						<label><input type="radio" name="constant_type" value="BOOLEAN" onclick="EditorMgr.ConstantMgr.onTypeChanged();"/>Boolean</label>
+						<label><input type="radio" name="constant_type" value="STRING" onclick="EditorMgr.ConstantMgr.onTypeChanged();"/>String</label>
+					</li>
+					<li class="title value" style="display:none;">Value</li>
+					<li class="data value" style="display:none;">
+						<div class="integer">
+							<input type="number" placeholder="no value" />
+						</div>
+						<div class="float">
+							<input type="number" placeholder="no value" />
+						</div>
+						<div class="boolean">
+							<select class="boolean">
+								<option value="false">false</option>
+								<option value="true">true</option>
+							</select>
+						</div>
+						<div class="string">
+							<input type="text" placeholder="no value"/>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<div class="ui-corner-all editor attribute">
+				<ul>
+					<li class="title name">Name</li>
+					<li class="data name"><input class="name" type="text" placeholder="the name of the attribute"/></li>
+					<li class="title comment">Comment</li>
+					<li class="data comment"><textarea class="comment" placeholder="no comment"></textarea></li>
+					<li class="title type">Type</li>
+					<li class="data type">
+						<label><input type="radio" name="attribute_type" value="INTEGER" onclick="EditorMgr.AttributeMgr.onTypeChanged();"/>Integer</label>
+						<label><input type="radio" name="attribute_type" value="FLOAT" onclick="EditorMgr.AttributeMgr.onTypeChanged();"/>Float</label>
+						<label><input type="radio" name="attribute_type" value="BOOLEAN" onclick="EditorMgr.AttributeMgr.onTypeChanged();"/>Boolean</label>
+						<label><input type="radio" name="attribute_type" value="STRING" onclick="EditorMgr.AttributeMgr.onTypeChanged();"/>String</label>
+						<label><input type="radio" name="attribute_type" value="OBJECT" onclick="EditorMgr.AttributeMgr.onTypeChanged();"/>Object</label>
+						<label><input type="radio" name="attribute_type" value="ARRAY" onclick="EditorMgr.AttributeMgr.onTypeChanged();"/>Array</label>
+					</li>
+					<li class="title value" style="display:none;">Value</li>
+					<li class="data value" style="display:none;">
+						<div class="integer">
+							<input type="number" placeholder="no value" />
+							<div class="ui-corner-all integer droparea empty small" style="display:none;"></div>
+							<label><input type="checkbox" onclick="EditorMgr.AttributeMgr.onReferenceToggled('integer');"/>reference</label>
+						</div>
+						<div class="float">
+							<input type="number" placeholder="no value" />
+							<div class="ui-corner-all float droparea empty small" style="display:none;"></div>
+							<label><input type="checkbox" onclick="EditorMgr.AttributeMgr.onReferenceToggled('float');"/>reference</label>
+						</div>
+						<div class="boolean">
+							<select class="boolean">
+								<option value="false">false</option>
+								<option value="true">true</option>
+							</select>
+							<div class="ui-corner-all boolean droparea empty small" style="display:none;"></div>
+							<label><input type="checkbox" onclick="EditorMgr.AttributeMgr.onReferenceToggled('boolean');"/>reference</label>
+						</div>
+						<div class="string">
+							<input type="text" placeholder="no value"/>
+							<div class="ui-corner-all string droparea empty small" style="display:none;"></div>
+							<label><input type="checkbox" onclick="EditorMgr.AttributeMgr.onReferenceToggled('string');"/>reference</label>
+						</div>
+						<div class="object">
+							<div class="ui-corner-all object droparea empty small"></div>
+						</div>
+						<div class="array">
+							<div class="ui-corner-all object droparea empty small"></div>
+						</div>
+					</li>
+					<li class="title filter" style="display:none;">Filter</li>
+					<li class="data filter" style="display:none;">
+						<div class="integer float">
+							<label><input type="checkbox" onclick="EditorMgr.AttributeMgr.onFilterToggled('integer');"/>enabled</label>
+							<select style="display:none;">
+								<option value="[">[</option>
+								<option value="(">(</option>
+							</select style="display:none;">
+							<input type="number" placeholder="n/a" style="display:none;"/>
+							<span style="display:none;">..</span>
+							<input type="number" placeholder="n/a" style="display:none;"/>
+							<select style="display:none;">
+								<option value="]">]</option>
+								<option value=")">)</option>
+							</select>
+						</div>
+						<div class="string">
+							<label><input type="checkbox" onclick="EditorMgr.AttributeMgr.onFilterToggled('string');"/>enabled</label>
+							<span style="display:none;">^</span><input type="text" placeholder="regex here" style="display:none;"/><span style="display:none;">$</span>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div id="tree">
+			<h2><span>Model Tree Layout</span><div class="widget draggable tree" /></h2>
+			<div class="default droparea empty"></div>
+			<div class="namespaces" style="display:none;"/>
+				<h3 class="template widget tree-item namespace"></h3>
+				<div class="template" style="padding:0" onclick="TreeMgr.select(null, event)">
+					<ul>
+						<li class="template object">
+							<div class="item tree-item widget object" onclick="TreeMgr.select($(this), event)">
+								<div class="ui-icon ui-icon-triangle-1-s" onclick="TreeMgr.toggleItemDisplay($(this.parentNode.parentNode))"></div>
+								<div class="widget draggable icon-object"></div>
+								<div class="name" title="comment"></div>
+							</div>
+							<ul class="children">
+								<li class="constants">
+									<div class="item">
+										<div class="ui-icon ui-icon-triangle-1-s" onclick="TreeMgr.toggleItemDisplay($(this.parentNode.parentNode))"></div>
+										<div class="widget draggable icon-constant"></div>
+										<div class="name" title="comment">Constants</div>
+									</div>
+									<ul>
+										<li class="template constant">
+											<div class="item tree-item widget constant" onclick="TreeMgr.select($(this), event)">
+												<div class="widget draggable"></div>
+												<div class="name" title="comment"></div>
+											</div>
+										</li>
+									</ul>
+								</li>
+								<li class="attributes">
+									<div class="item">
+										<div class="ui-icon ui-icon-triangle-1-s" onclick="TreeMgr.toggleItemDisplay($(this.parentNode.parentNode))"></div>
+										<div class="widget draggable icon-attribute"></div>
+										<div class="name" title="comment">Attributes</div>
+									</div>
+									<ul>
+										<li class="template attribute">
+											<div class="item tree-item widget attribute" onclick="TreeMgr.select($(this), event)">
+												<div class="widget draggable"></div>
+												<div class="name" title="comment"></div>
+											</div>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+					<ul>
+				</div>
+			</div>
+		</div>
+		<div class="clear"></div>
+	</div>
+</div>
+<!-- ####################################################################################################### -->
+<div class="wrapper col4">
+	<div id="copyright">
+		<p class="center">Copyright &copy; 2015 Vanchu - All Rights Reserved - <a href="#">Vanchu Technology Team</a></p>
+		<br class="clear" />
+	</div>
+</div>
+<div style='height: 0px;width: 0px; overflow:hidden;'><input id="localfile" type="file"/></div>
+</body>
+</html>

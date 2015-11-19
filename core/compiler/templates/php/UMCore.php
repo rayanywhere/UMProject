@@ -1,14 +1,14 @@
 <?php
-namespace UM {
+namespace UMCore {
 	abstract class Model {
 		abstract public function encodeToJson();
 	}
 }
 
 {% for namespace in namespaces %}
-namespace UM\{{ namespace.name }} {
+namespace UMCore\{{ namespace.name }} {
 	{% for object in namespace.objects -%}
-	class {{ object.name }} extends \UM\Model {
+	class {{ object.name }} extends \UMCore\Model {
 		{% for constant in object.constants -%}
 		const {{ constant.name }} = {{ constant.value }};
 		{%- endfor %}
@@ -28,29 +28,29 @@ namespace UM\{{ namespace.name }} {
 				{%- elseif attribute|um_attribute_is("INTEGER") -%}
 				$this->_{{ attribute.name }} = (int)($json['{{ attribute.name }}']);
 				{%- elseif attribute|um_attribute_is("OBJECT") -%}
-				$this->_{{ attribute.name }} = new \UM\{{ attribute.value.namespace }}\{{ attribute.value.object }}($json['{{ attribute.name }}']);
+				$this->_{{ attribute.name }} = new \UMCore\{{ attribute.value.namespace }}\{{ attribute.value.object }}($json['{{ attribute.name }}']);
 				{%- elseif attribute|um_attribute_is("ARRAY") -%}
 				$this->_{{ attribute.name }} = [];
 				foreach($json['{{ attribute.name }}'] as $item) {
-					$this->_{{ attribute.name }}[] = new \UM\{{ attribute.value.namespace }}\{{ attribute.value.object }}($item);
+					$this->_{{ attribute.name }}[] = new \UMCore\{{ attribute.value.namespace }}\{{ attribute.value.object }}($item);
 				}
 				{%- endif %}
 			}
 			else {
 				{% if attribute|um_attribute_is("STRING") -%}
 				{%- if attribute.value|um_value_is("object") -%}
-				$this->_{{ attribute.name }} = \UM\{{ attribute.value.namespace }}\{{ attribute.value.object }}::{{ attribute.value.const }};
+				$this->_{{ attribute.name }} = \UMCore\{{ attribute.value.namespace }}\{{ attribute.value.object }}::{{ attribute.value.const }};
 				{%- else -%}
 				$this->_{{ attribute.name }} = "{{ attribute.value }}";
 				{%- endif -%}
 				{%- elseif attribute|um_attribute_is("BOOLEAN") || attribute|um_attribute_is("FLOAT") || attribute|um_attribute_is("INTEGER") -%}
 				{%- if attribute.value|um_value_is("object") -%}
-				$this->_{{ attribute.name }} = \UM\{{ attribute.value.namespace }}\{{ attribute.value.object }}::{{ attribute.value.constant }};
+				$this->_{{ attribute.name }} = \UMCore\{{ attribute.value.namespace }}\{{ attribute.value.object }}::{{ attribute.value.constant }};
 				{%- else -%}
 				$this->_{{ attribute.name }} = {{ attribute.value }};
 				{%- endif -%}
 				{%- elseif attribute|um_attribute_is("OBJECT") -%}
-				$this->_{{ attribute.name }} = new \UM\{{ attribute.value.namespace }}\{{ attribute.value.object }}();
+				$this->_{{ attribute.name }} = new \UMCore\{{ attribute.value.namespace }}\{{ attribute.value.object }}();
 				{%- elseif attribute|um_attribute_is("ARRAY") -%}
 				$this->_{{ attribute.name }} = [];
 				{%- endif %}

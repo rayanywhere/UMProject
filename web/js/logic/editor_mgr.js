@@ -177,75 +177,75 @@ var EditorMgr = {
 			$("#editor > div.attribute > ul > li.type.data input:radio").prop("checked", false);
 			$("#editor > div.attribute > ul > li.value.data input:checkbox").prop("checked", false);
 			$("#editor > div.attribute > ul > li.value.data select").val($("#editor > div.attribute > ul > li.value.data select option:first").val());
-			$("#editor > div.attribute > ul > li.value.data .droppable").text("");
-			$("#editor > div.attribute > ul > li.value.data > div.integer .droppable").droppable({
+			$("#editor > div.attribute > ul > li.value.data .droparea").text("").addClass("empty");
+			$("#editor > div.attribute > ul > li.value.data > div.integer .droparea").droppable({
 						hoverClass: "ui-state-highlight",
 						drop: function(event, ui) {
 							var treePath = new TreePath(ui.draggable);
 							if (treePath && (treePath.type == "CONSTANT")) {
 								var constant = DataMgr.findConstant(DataMgr.findObject(DataMgr.findNamespace(treePath.pathArr[0]), treePath.pathArr[1]), treePath.pathArr[2]);
 								if (constant && constant.type == "INTEGER") {
-									$("#editor > div.attribute > ul > li.value.data > div.integer .droppable").text(treePath.pathArr[0] + "." + treePath.pathArr[1] + "." + treePath.pathArr[2]);
+									$("#editor > div.attribute > ul > li.value.data > div.integer .droparea").text(treePath.pathArr[0] + "." + treePath.pathArr[1] + "." + treePath.pathArr[2]).removeClass("empty");
 								}
 							}
 						}
 					});
-			$("#editor > div.attribute > ul > li.value.data > div.float .droppable").droppable({
+			$("#editor > div.attribute > ul > li.value.data > div.float .droparea").droppable({
 						hoverClass: "ui-state-highlight",
 						drop: function(event, ui) {
 							var treePath = new TreePath(ui.draggable);
 							if (treePath && (treePath.type == "CONSTANT")) {
 								var constant = DataMgr.findConstant(DataMgr.findObject(DataMgr.findNamespace(treePath.pathArr[0]), treePath.pathArr[1]), treePath.pathArr[2]);
 								if (constant && constant.type == "FLOAT") {
-									$("#editor > div.attribute > ul > li.value.data > div.float .droppable").text(treePath.pathArr[0] + "." + treePath.pathArr[1] + "." + treePath.pathArr[2]);
+									$("#editor > div.attribute > ul > li.value.data > div.float .droparea").text(treePath.pathArr[0] + "." + treePath.pathArr[1] + "." + treePath.pathArr[2]).removeClass("empty");
 								}
 							}
 						}
 					});
-			$("#editor > div.attribute > ul > li.value.data > div.boolean .droppable").droppable({
+			$("#editor > div.attribute > ul > li.value.data > div.boolean .droparea").droppable({
 						hoverClass: "ui-state-highlight",
 						drop: function(event, ui) {
 							var treePath = new TreePath(ui.draggable);
 							if (treePath && (treePath.type == "CONSTANT")) {
 								var constant = DataMgr.findConstant(DataMgr.findObject(DataMgr.findNamespace(treePath.pathArr[0]), treePath.pathArr[1]), treePath.pathArr[2]);
 								if (constant && constant.type == "BOOLEAN") {
-									$("#editor > div.attribute > ul > li.value.data > div.boolean .droppable").text(treePath.pathArr[0] + "." + treePath.pathArr[1] + "." + treePath.pathArr[2]);
+									$("#editor > div.attribute > ul > li.value.data > div.boolean .droparea").text(treePath.pathArr[0] + "." + treePath.pathArr[1] + "." + treePath.pathArr[2]).removeClass("empty");
 								}
 							}
 						}
 					});
-			$("#editor > div.attribute > ul > li.value.data > div.string .droppable").droppable({
+			$("#editor > div.attribute > ul > li.value.data > div.string .droparea").droppable({
 						hoverClass: "ui-state-highlight",
 						drop: function(event, ui) {
 							var treePath = new TreePath(ui.draggable);
 							if (treePath && (treePath.type == "CONSTANT")) {
 								var constant = DataMgr.findConstant(DataMgr.findObject(DataMgr.findNamespace(treePath.pathArr[0]), treePath.pathArr[1]), treePath.pathArr[2]);
 								if (constant && constant.type == "STRING") {
-									$("#editor > div.attribute > ul > li.value.data > div.string .droppable").text(treePath.pathArr[0] + "." + treePath.pathArr[1] + "." + treePath.pathArr[2]);
+									$("#editor > div.attribute > ul > li.value.data > div.string .droparea").text(treePath.pathArr[0] + "." + treePath.pathArr[1] + "." + treePath.pathArr[2]).removeClass("empty");
 								}
 							}
 						}
 					});
-			$("#editor > div.attribute > ul > li.value.data > div.object .droppable").droppable({
+			$("#editor > div.attribute > ul > li.value.data > div.object .droparea").droppable({
 						hoverClass: "ui-state-highlight",
 						drop: function(event, ui) {
 							var treePath = new TreePath(ui.draggable);
 							if (treePath && (treePath.type == "OBJECT")) {
 								var object = DataMgr.findObject(DataMgr.findNamespace(treePath.pathArr[0]), treePath.pathArr[1]);
 								if (object) {
-									$("#editor > div.attribute > ul > li.value.data > div.object .droppable").text(treePath.pathArr[0] + "." + treePath.pathArr[1]);
+									$("#editor > div.attribute > ul > li.value.data > div.object .droparea").text(treePath.pathArr[0] + "." + treePath.pathArr[1]).removeClass("empty");
 								}
 							}
 						}
 					});
-			$("#editor > div.attribute > ul > li.value.data > div.array .droppable").droppable({
+			$("#editor > div.attribute > ul > li.value.data > div.array .droparea").droppable({
 						hoverClass: "ui-state-highlight",
 						drop: function(event, ui) {
 							var treePath = new TreePath(ui.draggable);
 							if (treePath && (treePath.type == "OBJECT")) {
 								var object = DataMgr.findObject(DataMgr.findNamespace(treePath.pathArr[0]), treePath.pathArr[1]);
 								if (object) {
-									$("#editor > div.attribute > ul > li.value.data > div.array .droppable").text(treePath.pathArr[0] + "." + treePath.pathArr[1]);
+									$("#editor > div.attribute > ul > li.value.data > div.array .droparea").text(treePath.pathArr[0] + "." + treePath.pathArr[1]).removeClass("empty");
 								}
 							}
 						}
@@ -306,7 +306,7 @@ var EditorMgr = {
 			switch(type) {
 				case "INTEGER":
 					if ($("#editor > div.attribute > ul > li.value.data div.integer > label > input:checkbox").prop("checked")) {
-						value = EditorMgr.AttributeMgr._parseReference($("#editor > div.attribute > ul > li.value.data div.integer > div.droppable"));
+						value = EditorMgr.AttributeMgr._parseReference($("#editor > div.attribute > ul > li.value.data div.integer > div.droparea"));
 					}
 					else {
 						value = parseInt($("#editor > div.attribute > ul > li.value.data div.integer > input").val());
@@ -314,7 +314,7 @@ var EditorMgr = {
 					break;
 				case "FLOAT":
 					if ($("#editor > div.attribute > ul > li.value.data div.float > label > input:checkbox").prop("checked")) {
-						value = EditorMgr.AttributeMgr._parseReference($("#editor > div.attribute > ul > li.value.data div.float > div.droppable"));
+						value = EditorMgr.AttributeMgr._parseReference($("#editor > div.attribute > ul > li.value.data div.float > div.droparea"));
 					}
 					else {
 						value = $("#editor > div.attribute > ul > li.value.data div.float > input").val() * 1.0;
@@ -322,7 +322,7 @@ var EditorMgr = {
 					break;
 				case "BOOLEAN":
 					if ($("#editor > div.attribute > ul > li.value.data div.boolean > label > input:checkbox").prop("checked")) {
-						value = EditorMgr.AttributeMgr._parseReference($("#editor > div.attribute > ul > li.value.data div.boolean > div.droppable"));
+						value = EditorMgr.AttributeMgr._parseReference($("#editor > div.attribute > ul > li.value.data div.boolean > div.droparea"));
 					}
 					else {
 						value = $("#editor > div.attribute > ul > li.value.data div.boolean > select option:selected").val() ? true : false;
@@ -330,17 +330,17 @@ var EditorMgr = {
 					break;
 				case "STRING":
 					if ($("#editor > div.attribute > ul > li.value.data div.string > label > input:checkbox").prop("checked")) {
-						value = EditorMgr.AttributeMgr._parseReference($("#editor > div.attribute > ul > li.value.data div.string > div.droppable"));
+						value = EditorMgr.AttributeMgr._parseReference($("#editor > div.attribute > ul > li.value.data div.string > div.droparea"));
 					}
 					else {
 						value = $("#editor > div.attribute > ul > li.value.data div.string > input").val();
 					}
 					break;
 				case "OBJECT":
-					value = EditorMgr.AttributeMgr._parseReference($("#editor > div.attribute > ul > li.value.data div.object > div.droppable"));
+					value = EditorMgr.AttributeMgr._parseReference($("#editor > div.attribute > ul > li.value.data div.object > div.droparea"));
 					break;
 				case "ARRAY":
-					value = EditorMgr.AttributeMgr._parseReference($("#editor > div.attribute > ul > li.value.data div.array > div.droppable"));
+					value = EditorMgr.AttributeMgr._parseReference($("#editor > div.attribute > ul > li.value.data div.array > div.droparea"));
 					break;
 			}
 

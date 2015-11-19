@@ -36,7 +36,7 @@ exports.render = function(json, language) {
 function renderAsPHP(root) {
 	return [
 				{
-					"UModel.php": swig.renderFile(__dirname + "/templates/php/UModel.php", root)
+					"UMCore.php": swig.renderFile(__dirname + "/templates/php/UMCore.php", root)
 				}
 			];
 }
@@ -44,7 +44,7 @@ function renderAsPHP(root) {
 function renderAsJava(root) {
 	return [
 				{
-					"UModel.java": swig.renderFile(__dirname + "/templates/java/UModel.java", root)
+					"UMCore.java": swig.renderFile(__dirname + "/templates/java/UMCore.java", root)
 				}
 			];
 }
@@ -52,8 +52,8 @@ function renderAsJava(root) {
 function renderAsObjc(root) {
 	return [
 				{
-					"UModel.h": swig.renderFile(__dirname + "/templates/objc/UModel.h", root),
-					"UModel.m": swig.renderFile(__dirname + "/templates/objc/UModel.m", root)
+					"UMCore.h": swig.renderFile(__dirname + "/templates/objc/UMCore.h", root),
+					"UMCore.m": swig.renderFile(__dirname + "/templates/objc/UMCore.m", root)
 				}
 			];
 }
