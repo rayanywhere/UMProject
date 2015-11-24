@@ -1,0 +1,18 @@
+#toolbar .widget {
+	width:30px;
+	height:30px;
+	margin:2px 8px;
+}
+
+#toolbar .widget.interface {
+	    background-image:url("/images/web/interface.png");
+}
+#toolbar .widget.version {
+	    background-image:url("/images/web/version.png");
+}
+#toolbar .widget.trash {
+	background-image:url("/images/core/trash.png");
+}
+#toolbar .widget.transfer {
+	background-image:url("/images/core/transfer.png");
+}

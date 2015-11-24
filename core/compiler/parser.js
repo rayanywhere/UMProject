@@ -8,7 +8,7 @@ exports.parse = function(filename, callback) {
 				callback(err, null);
 				return;
 			}
-
+			data = data.replace(/^\uFEFF/, '');
 			json = JSON.parse(data);
 			validate();
 			callback(false, json);
@@ -128,7 +128,7 @@ function validateAttribute(attribute) {
 }
 
 function validateAttributeFilter(attribute) {
-	if ((attribute.filter === null) && (typeof attribute.filter === "object")) {
+	if (!attribute.filter) {
 		return;
 	}
 

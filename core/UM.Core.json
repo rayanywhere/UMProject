@@ -1,187 +1,84 @@
-[
-	{
-		"name":"Common",
-		"comment":"Common namespace",
-		"objects":[
-			{
-				"name":"UserInfo",
-				"comment":"Define user info",
-				"constants":[
-					{
-						"name": "GenderMale",
-						"comment": "男",
-						"type": "INTEGER",
-						"value": 0
-					},
-					{
-						"name": "GenderFemale",
-						"comment": "女",
-						"type": "INTEGER",
-						"value": 1
-					}
-				],
-				"attributes":[
-					{
-						"name": "name",
-						"comment":"nothing to say",
-						"type": "STRING",
-						"filter": "\\w{1,10}",
-						"value": ""
-					},
-					{
-						"name": "gender",
-						"comment":"gender comment",
-						"type": "INTEGER",
-						"filter": {
-							"range":{
-								"lower":0,
-								"upper":1
-							},
-							"include":{
-								"lower":true,
-								"upper":true
-							}
-						},
-						"value": {
-							"namespace":"Common",
-							"object":"UserInfo",
-							"constant":"GenderFemale"
-						}
-					},
-					{
-						"name": "businesscard",
-						"comment": "businesscard comment",
-						"type": "OBJECT",
-						"filter":null,
-						"value": {
-							"namespace":"Common",
-							"object":"UserBusinesscard"
-						}
-					},
-					{
-						"name": "addresses",
-						"comment": "address array",
-						"type": "ARRAY",
-						"filter":null,
-						"value": {
-							"namespace":"Common",
-							"object":"UserAddress"
-						}
-					}
-				]
-			},
-			{
-				"name":"UserBusinesscard",
-				"comment":"Define user businesscard",
-				"constants":[],
-				"attributes":[
-					{
-						"name":"title",
-						"comment":"CEO, CTO, CFO, COO",
-						"type":"STRING",
-						"filter": "\\w{3}",
-						"value":""
-					},
-					{
-						"name":"department",
-						"comment":"nothing to say",
-						"type":"STRING",
-						"filter":null,
-						"value":""
-					}
-				]
-			},
-			{
-				"name":"UserAddress",
-				"comment":"Define user address",
-				"constants":[],
-				"attributes":[
-					{
-						"name":"latitude",
-						"comment":"latitude",
-						"type":"FLOAT",
-						"filter": {
-							"range":{
-								"lower":0.0,
-								"upper":360.0
-							},
-							"include":{
-								"lower":true,
-								"upper":false
-							}
-						},
-						"value":0.0
-					},
-					{
-						"name":"longitude",
-						"type":"FLOAT",
-						"comment":"longitude",
-						"filter": {
-							"range":{
-								"lower":0.0,
-								"upper":360.0
-							},
-							"include":{
-								"lower":true,
-								"upper":false
-							}
-						},
-						"value":0.0
-					},
-					{
-						"name":"location",
-						"comment":"location",
-						"type":"STRING",
-						"filter":null,
-						"value":""
-					}
-				]
-			}
-		]
-	},
-	{
-		"name":"Network",
-		"comment":"Network models",
-		"objects":[
-			{
-				"name":"UserInfoRequest",
-				"comment":"Request user info",
-				"constants":[],
-				"attributes":[
-					{
-						"name":"uid",
-						"comment":"",
-						"type":"STRING",
-						"filter":"[0-9a-f]{32}",
-						"value":""
-					},
-					{
-						"name":"auth",
-						"comment":"",
-						"type":"STRING",
-						"filter":"[0-9a-f]{32}",
-						"value":""
-					}
-				]
-			},
-			{
-				"name":"UserInfoResponse",
-				"comment":"Response of UserInfo",
-				"constants":[],
-				"attributes":[
-					{
-						"name":"info",
-						"comment":"",
-						"type":"OBJECT",
-						"filter":null,
-						"value":{
-							"namespace":"Common",
-							"object":"UserInfo"
-						}
-					}
-				]
-			}
-		]
-	}
+﻿[
+  {
+    "name": "Common",
+    "comment": "",
+    "objects": [
+      {
+        "name": "User",
+        "comment": "",
+        "constants": [],
+        "attributes": [
+          {
+            "name": "name",
+            "comment": "",
+            "type": "STRING",
+            "value": ""
+          },
+          {
+            "name": "age",
+            "comment": "",
+            "type": "INTEGER",
+            "value": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Network",
+    "comment": "",
+    "objects": [
+      {
+        "name": "UserGetRequest",
+        "comment": "",
+        "constants": [],
+        "attributes": []
+      },
+      {
+        "name": "UserGetResponse",
+        "comment": "",
+        "constants": [],
+        "attributes": [
+          {
+            "name": "info",
+            "comment": "",
+            "type": "OBJECT",
+            "value": {
+              "namespace": "Common",
+              "object": "User"
+            }
+          }
+        ]
+      },
+      {
+        "name": "UserSaveRequest",
+        "comment": "",
+        "constants": [],
+        "attributes": [
+          {
+            "name": "info",
+            "comment": "",
+            "type": "OBJECT",
+            "value": {
+              "namespace": "Common",
+              "object": "User"
+            }
+          }
+        ]
+      },
+      {
+        "name": "UserSaveResponse",
+        "comment": "",
+        "constants": [],
+        "attributes": [
+          {
+            "name": "result",
+            "comment": "",
+            "type": "INTEGER",
+            "value": 0
+          }
+        ]
+      }
+    ]
+  }
 ]
-

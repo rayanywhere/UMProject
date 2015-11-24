@@ -1,0 +1,60 @@
+#editor_version_dialog_template textarea, #editor_version_dialog_template input {
+	box-sizing:border-box;
+	width:100%;
+}
+
+#editor ul {
+	margin:5px;
+}
+
+#editor ul li {
+	margin:4px 4px;
+	font-size:13px;
+}
+
+#editor ul li.label {
+	margin-top:10px;
+	font-size:15px;
+}
+
+#editor ul li input[type=text], #editor ul li textarea {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	font-size:13px;
+}
+
+#editor ul li textarea {
+	width:100%;
+	min-height:40px;
+}
+
+#editor ul li > * {
+	display:inline-block;
+	vertical-align:middle;
+}
+
+#editor li > div.request, #editor li > div.response {
+	width:200px;
+	height:30px;
+	line-height:30px;
+	text-align:center;
+}
+
+#editor > .droppable {
+	min-height:80px;
+}
+
+#editor .widget {
+	width:25px;
+	height:25px;
+	display:inline-block;
+	float:right;
+}
+
+#editor .widget.interface {
+	background-image:url("/images/web/interface.png");
+}
+#editor .widget.version {
+	background-image:url("/images/web/version.png");
+}
