@@ -1,6 +1,6 @@
 ﻿[
   {
-    "name": "1",
+    "name": "v1",
     "comment": "",
     "interfaces": [
       {
@@ -8,31 +8,31 @@
         "comment": "",
         "protocol": "http",
         "host": "10.10.1.46",
-        "port": 80,
+        "port": 8000,
         "timeout": 30,
         "request": {
-          "namespace": "Network",
-          "object": "UserGetRequest"
+          "namespace": "Http",
+          "object": "GetUserRequest"
         },
         "response": {
-          "namespace": "Network",
-          "object": "UserGetResponse"
+          "namespace": "Http",
+          "object": "GetUserResponse"
         }
       },
       {
-        "name": "saveUser",
+        "name": "setUser",
         "comment": "",
         "protocol": "http",
         "host": "10.10.1.46",
-        "port": 80,
+        "port": 8000,
         "timeout": 30,
         "request": {
-          "namespace": "Network",
-          "object": "UserSaveRequest"
+          "namespace": "Http",
+          "object": "SetUserRequest"
         },
         "response": {
-          "namespace": "Network",
-          "object": "UserSaveResponse"
+          "namespace": "Http",
+          "object": "SetUserResponse"
         }
       }
     ]

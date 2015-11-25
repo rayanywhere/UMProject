@@ -24,7 +24,11 @@ exports.render = function(json, target) {
 };
 
 function renderAsPHPServer(root) {
-	var files = [];
+	var files = [
+			{
+				"UMWebBootstrap.php": swig.renderFile(__dirname + "/templates/php/server/UMWebBootstrap.php", root)
+			}
+		];
 	root.versions.forEach(function(version) {
 				var keyName = version.name + "/UMWebServer.php";
 				var file = {

@@ -1,6 +1,6 @@
 ﻿[
   {
-    "name": "Common",
+    "name": "Basic",
     "comment": "",
     "objects": [
       {
@@ -25,57 +25,50 @@
     ]
   },
   {
-    "name": "Network",
+    "name": "Http",
     "comment": "",
     "objects": [
       {
-        "name": "UserGetRequest",
+        "name": "GetUserRequest",
         "comment": "",
         "constants": [],
         "attributes": []
       },
       {
-        "name": "UserGetResponse",
+        "name": "SetUserRequest",
         "comment": "",
         "constants": [],
         "attributes": [
           {
-            "name": "info",
+            "name": "user",
             "comment": "",
             "type": "OBJECT",
             "value": {
-              "namespace": "Common",
+              "namespace": "Basic",
               "object": "User"
             }
           }
         ]
       },
       {
-        "name": "UserSaveRequest",
+        "name": "SetUserResponse",
+        "comment": "",
+        "constants": [],
+        "attributes": []
+      },
+      {
+        "name": "GetUserResponse",
         "comment": "",
         "constants": [],
         "attributes": [
           {
-            "name": "info",
+            "name": "user",
             "comment": "",
             "type": "OBJECT",
             "value": {
-              "namespace": "Common",
+              "namespace": "Basic",
               "object": "User"
             }
-          }
-        ]
-      },
-      {
-        "name": "UserSaveResponse",
-        "comment": "",
-        "constants": [],
-        "attributes": [
-          {
-            "name": "result",
-            "comment": "",
-            "type": "INTEGER",
-            "value": 0
           }
         ]
       }

@@ -22,7 +22,7 @@ namespace UMWebClient {
 		{%- endfor %}
 		private static function _makeRequest($requestJson, &$responseJson, $version, $interface, $protocol, $host, $port, $timeout) {
 			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, $protocol . '://' . $host . ':' . $port . '/web_bridge?ver=' . urlencode($version) . '&interface=' . urlencode($interface));
+			curl_setopt($ch, CURLOPT_URL, $protocol . '://' . $host . ':' . $port . '/web?v=' . urlencode($version) . '&i=' . urlencode($interface));
 			curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);

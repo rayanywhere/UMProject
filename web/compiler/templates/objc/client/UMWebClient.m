@@ -1,11 +1,10 @@
 #import "UMWebClient.h"
 
-@interface UMWebTransport : NSObject<NSURLConnectionDataDelegate>
+@interface UMWebTransport : NSObject<NSURLSessionDelegate>
 {
 	NSURL *_url;
 	NSInteger _timeout;
 	void (^_callback)(NSDictionary *responseJson, NSInteger error);
-	NSMutableData *_responseData;
 }
 - (instancetype)initWithVersion:(NSString *)version withInterface:(NSString* )interface withProtocol:(NSString *)protocol withHost:(NSString *)host withPort:(NSInteger)port withTimeout:(NSInteger)timeout callback:(void (^)(NSDictionary *responseJson, NSInteger error))callback;
 - (void)makeRequest:(NSDictionary *)requestJson;
@@ -14,10 +13,9 @@
 @implementation UMWebTransport
 - (instancetype)initWithVersion:(NSString *)version withInterface:(NSString* )interface withProtocol:(NSString *)protocol withHost:(NSString *)host withPort:(NSInteger)port withTimeout:(NSInteger)timeout callback:(void (^)(NSDictionary *responseJson, NSInteger error))callback {
 	if (self = [super init]) {
-		_url= [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/web?ver=%@&interface=%@", protocol, host, @(port), version, interface]];
+		_url= [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/web?v=%@&i=%@", protocol, host, @(port), [version stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]], [interface stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]]];
 		_timeout = timeout;
 		_callback = callback;
-		_responseData = [NSMutableData data];
 	}
 	return self;
 }
@@ -28,41 +26,30 @@
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:_url cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:_timeout];
 	[request setHTTPMethod:@"POST"];
 	[request setValue:[NSString stringWithFormat:@"%@", @(requestData.length)] forHTTPHeaderField:@"Content-Length"];
-	[request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+	[request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+	[request setHTTPBody:requestData];
 
-	NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:NO];
-	[connection start];
+	NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:[NSOperationQueue mainQueue]];
+	NSURLSessionDataTask *postTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error)
+	{
+		NSUInteger statusCode = [((NSHTTPURLResponse *)response) statusCode];
+		if (statusCode != 200) {
+			_callback(nil, kUMWebResultServerError);
+			return;
+		}
+
+		error = nil;
+		NSDictionary* responseJson = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+		if (error || !responseJson) {
+			_callback(nil, kUMWebResultServerError);
+			return;
+		}
+
+		_callback(responseJson, kUMWebResultSucc);
+	}];
+	[postTask resume];
 }
 
-#pragma mark NSURLConnectionDataDelegate
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
-	NSUInteger statusCode = [((NSHTTPURLResponse *)response) statusCode];
-	if (statusCode != 200) {
-		[connection cancel];
-		_callback(nil, kUMWebResultServerError);
-		return;
-	}
-	[_responseData setLength:0];
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-	[_responseData appendData:data];
-}
-
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-	NSError* error = nil;
-	NSDictionary* responseJson = [NSJSONSerialization JSONObjectWithData:_responseData options:kNilOptions error:&error];
-	if (error || !responseJson) {
-		_callback(nil, kUMWebResultServerError);
-		return;
-	}
-
-	_callback(responseJson, kUMWebResultSucc);
-}
-
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-	_callback(nil, kUMWebResultNetworkError);
-}
 @end
 
 @implementation UMWebClient
