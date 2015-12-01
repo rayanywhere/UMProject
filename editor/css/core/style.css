@@ -1,0 +1,55 @@
+.webix_tree_namespace {
+	background-image: url("/images/core/namespace.png");
+	background-size: contain;
+	width: 20px;
+	height: 20px;
+}
+
+.webix_tree_object {
+	background-image: url("/images/core/object.png");
+	background-size: contain;
+	width: 20px;
+	height: 20px;
+}
+
+.webix_tree_constant {
+	background-image: url("/images/core/constant.png");
+	background-size: contain;
+	width: 20px;
+	height: 20px;
+}
+
+.webix_tree_attribute {
+	background-image: url("/images/core/attribute.png");
+	background-size: contain;
+	width: 20px;
+	height: 20px;
+}
+
+.webix_tree_integer {
+	background-image: url("/images/core/integer.png");
+	background-size: contain;
+	width: 20px;
+	height: 20px;
+}
+
+.webix_tree_float {
+	background-image: url("/images/core/float.png");
+	background-size: contain;
+	width: 20px;
+	height: 20px;
+}
+
+.webix_tree_boolean {
+	background-image: url("/images/core/boolean.png");
+	background-size: contain;
+	width: 20px;
+	height: 20px;
+}
+
+.webix_tree_string {
+	background-image: url("/images/core/string.png");
+	background-size: contain;
+	width: 20px;
+	height: 20px;
+}

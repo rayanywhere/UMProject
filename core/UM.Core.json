@@ -1,7 +1,7 @@
-﻿[
+[
   {
     "name": "Basic",
-    "comment": "",
+    "comment": "aaaaa",
     "objects": [
       {
         "name": "User",
@@ -26,13 +26,29 @@
   },
   {
     "name": "Http",
-    "comment": "",
+    "comment": "aaaaa",
     "objects": [
       {
         "name": "GetUserRequest",
         "comment": "",
         "constants": [],
         "attributes": []
+      },
+      {
+        "name": "GetUserResponse",
+        "comment": "",
+        "constants": [],
+        "attributes": [
+          {
+            "name": "user",
+            "comment": "",
+            "type": "OBJECT",
+            "value": {
+              "namespace": "Basic",
+              "object": "User"
+            }
+          }
+        ]
       },
       {
         "name": "SetUserRequest",
@@ -55,22 +71,6 @@
         "comment": "",
         "constants": [],
         "attributes": []
-      },
-      {
-        "name": "GetUserResponse",
-        "comment": "",
-        "constants": [],
-        "attributes": [
-          {
-            "name": "user",
-            "comment": "",
-            "type": "OBJECT",
-            "value": {
-              "namespace": "Basic",
-              "object": "User"
-            }
-          }
-        ]
       }
     ]
   }

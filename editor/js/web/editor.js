@@ -1,106 +1,86 @@
 var Editor = {
-	root:false,
 	init: function() {
 		NotificationCenter.addObserver(Editor);
-		Editor.root = $("#editor");
-
-		Editor.root.find(">.droppable").droppable({accept:"#toolbar .widget",hoverClass:"ui-state-highlight", drop: Editor._onDrop});
-		Editor.show(null);
+		Editor.Version.init();
+		Editor.Interface.init();
 	},
-	_onDrop: function(ui, evt) {
-		if (evt.draggable.hasClass("version")) {
-			Editor.show("version");
-		}
-		else if (evt.draggable.hasClass("interface")) {
-			Editor.show("interface");
-		}
-	},
-	show:function(editorName) {
-		Editor.root.find(">div:eq(0)>div").hide();
-		Editor.root.find(">h1:eq(0)>div").removeClass("version").removeClass("interface");
-		if (editorName) {
-			Editor.root.find(">div:eq(0)>div." + editorName).show();
-			Editor.root.find(">h1:eq(0)>span").text(editorName.charAt(0).toUpperCase() + editorName.slice(1));
-			Editor.root.find(">h1:eq(0)>div").addClass(editorName);
-			Editor.root.find(">div:eq(0)").removeClass("empty");
-			switch(editorName) {
-				case "interface":
-					Editor.Interface.init();
-					break;
-				case "version":
-					Editor.Version.init();
-					break;
-			}
-		}
-		else {
-			Editor.root.find(">h1:eq(0)>span").text("Getting Started");
-			Editor.root.find(">h1:eq(0)>div").removeClass("version").removeClass("interface");
-			Editor.root.find(">div:eq(0)").addClass("empty");
-		}
-	},
-	Version : {
-		root: false,
+	Version: {
 		init: function() {
-			Editor.Version.root = Editor.root.find(">div:eq(0)>div.version");
-			Editor.Version.root.find("input:text").val("");
-			Editor.Version.root.find("textarea").val("");
+			NotificationCenter.addObserver(Editor.Version);
+			$$("editor_version_button").attachEvent("onItemClick", Editor.Version._onSubmit);
 		},
-		getData: function() {
-			var name = Editor.Version.root.find("input:text").val();
-			var comment = Editor.Version.root.find("textarea").val();
-
-			if (name.length == 0) {
-				alert("name field cannot be left empty");
-				return false;
+		_onSubmit:function() {
+			var version = new UMWeb.Version($$("editor_version_name").getValue(), $$("editor_version_comment").getValue(), []);
+			if (!version.name || (version.name.length == 0)) {
+				webix.message("name field cannot be empty");
+				return;
 			}
-			return new UMWeb.Version(name, comment, []);
+
+			if (WebData.findVersion(version.name)) {
+				webix.message("duplicated version");
+				return;
+			}
+			WebData.addVersion(version);
 		}
 	},
-	Interface : {
-		root: false,
+	Interface: {
 		init: function() {
-			Editor.Interface.root = Editor.root.find(">div:eq(0)>div.interface");
-			Editor.Interface.root.find("textarea").val("");
-			Editor.Interface.root.find("li:eq(9) div").droppable({accept:"#tree .widget.object", hoverClass:"ui-state-highlight", drop: Editor.Interface._onDrop});
+			NotificationCenter.addObserver(Editor.Interface);
+			$$("editor_interface_button").attachEvent("onItemClick", Editor.Interface._onSubmit);
+			webix.DragControl.addDrop($$("editor_interface_request").$view,{
+			        $drop:function(source, target, context){
+			         	var dnd = webix.DragControl.getContext();
+			         	var components = dnd.source[0].replace(/^modeltree_/, "").split(".");
+			         	if (components.length == 2) {
+			         		$$("editor_interface_request").setValue(components[0] + "." + components[1]);
+			         	}
+			        }
+			});
+			webix.DragControl.addDrop($$("editor_interface_response").$view,{
+			        $drop:function(source, target, context){
+			         	var dnd = webix.DragControl.getContext();
+			         	var components = dnd.source[0].replace(/^modeltree_/, "").split(".");
+			         	if (components.length == 2) {
+			         		$$("editor_interface_response").setValue(components[0] + "." + components[1]);
+			         	}
+			        }
+			});
 		},
-		_onDrop: function(ui, evt) {
-			var components = evt.draggable.parent().next().attr("id").split("_");
-            var namespace = Data.findNamespace(components[1]);
-			var object = Data.findObject(namespace, components[2]);
-
-			$(ui.target).text(namespace.name + "." + object.name);
-			$(ui.target).removeClass("empty");
-		},
-		getData: function() {
-			var name = Editor.Interface.root.find("li:eq(1) input").val();
-			var comment = Editor.Interface.root.find("li:eq(3) textarea").val();
-			var protocol = Editor.Interface.root.find("li:eq(5) input:eq(0)").val();
-			var host = Editor.Interface.root.find("li:eq(5) input:eq(1)").val();
-			var port = parseInt(Editor.Interface.root.find("li:eq(5) input:eq(2)").val()) || 0;
-			var timeout = parseInt(Editor.Interface.root.find("li:eq(7) input").val()) || 0;
-			var request = Editor.Interface._parseObjectReference(Editor.Interface.root.find("li:eq(9) div:eq(0)"));
-			var response = Editor.Interface._parseObjectReference(Editor.Interface.root.find("li:eq(9) div:eq(1)"));
-			if (name.length == 0) {
-				alert("name field cannot be left empty");
-				return false;
+		_onSubmit:function() {
+			var interface = new UMWeb.Interface($$("editor_interface_name").getValue(), $$("editor_interface_comment").getValue(), $$("editor_interface_protocol").getValue(), $$("editor_interface_host").getValue(), parseInt($$("editor_interface_port").getValue()) || 80, parseInt($$("editor_interface_timeout")) || 0, null, null);
+			if (!interface.name || (interface.name.length == 0)) {
+				webix.message("name field cannot be empty");
+				return;
 			}
-			if ((protocol.length == 0) || (host.length == 0)) {
-				alert("address field cannot be left empty");
-				return false;
-			}
-			if (!request || !response) {
-				alert("request / response field cannot be left empty");
-				return false;
+			if (interface.host.length == 0) {
+				webix.message("host field cannot be empty");
+				return;
 			}
 
-			return new UMWeb.Interface(name, comment, protocol, host, port, timeout, request, response);
-	    },
-		_parseObjectReference: function(target) {
-			var target = target.text().split('.');
-			if (target.length != 2) {
-				return false;
+			var components = $$("editor_interface_request").getValue().split(".");
+			if (components.length != 2) {
+				webix.message("request cannot be empty");
+				return;
 			}
-			return {namespace:target[0], object:target[1]};
+			interface.request = {namespace: components[0], object:components[1]};
+
+			components = $$("editor_interface_response").getValue().split(".");
+			if (components.length != 2) {
+				webix.message("response cannot be empty");
+				return;
+			}
+			interface.response = {namespace:components[0], object:components[1]};
+
+
+			var version = WebTree.getSelectedVersion();
+			if (!version || WebData.findInterface(version, interface.name)) {
+				webix.message("duplicated interface");
+				return;
+			}
+			WebData.addInterface(version, interface);
+		},
+		onWebTreeEventSelectChanged:function(node) {
+			(node.$level == 1) ? $$("editor_interface_button").enable() : $$("editor_interface_button").disable();
 		}
 	}
 };

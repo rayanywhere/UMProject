@@ -1,106 +1,136 @@
-var Tree = {
-	root:false,
-	init: function() {
-		Tree.root = $("#tree");
-		NotificationCenter.addObserver(Tree);
-
-		Tree.root.find(">.droppable").droppable({accept:"#editor .widget.namespace", hoverClass: "ui-state-highlight", drop: function(event, ui) { 
-				Data.addNamespace(); 
-			}});
-		Tree.root.find(">.droppable").accordion({heightStyle: "fill", collapsible: true});
-	},
-	toggleDisplay:function(selfDiv, nodeDiv) {
-		if (selfDiv.hasClass("ui-icon-triangle-1-e")) {
-			selfDiv.removeClass("ui-icon-triangle-1-e").addClass("ui-icon-triangle-1-s");
-			nodeDiv.find(">ul").show();
-		}
-		else {
-			selfDiv.removeClass("ui-icon-triangle-1-s").addClass("ui-icon-triangle-1-e");
-			nodeDiv.find(">ul").hide();
-		}
-	},
-	onEventUiRemove:function(target) {
-		if (target.parents("#tree").length > 0) {
-			if (target.hasClass("namespace")) {
-				Data.removeNamespace(target.next().text());
-			}
-			else if (target.hasClass("object")) {
-				Data.removeObject(target.parent().parent().parent().parent().prev().find("span:last").text(), target.next().text());
-			}
-			else if (target.hasClass("constant")) {
-				Data.removeConstant(target.parent().parent().parent().parent().parent().parent().parent().prev().find("span:last").text(), target.parent().parent().parent().parent().prev().find("span:last").text(), target.next().text());
-			}
-			else if (target.hasClass("attribute")) {
-				Data.removeAttribute(target.parent().parent().parent().parent().parent().parent().parent().prev().find("span:last").text(), target.parent().parent().parent().parent().prev().find("span:last").text(), target.next().text());
-			}
-			else if (target.hasClass("data")) {
-				Data.load([]);
-			}
-		}
-	},
-	onEventNamespaceAdded:function(namespace) {
-		var tpl = $("#tree_namespace_template").clone();
-		tpl.find(".draggable").draggable({revert:true, revertDuration:0, helper:"clone"});
-		tpl.find(">h3>span").text(namespace.name).attr("title", namespace.comment);
-		tpl.find(">div>ul.droppable").attr("id", "tree_" + namespace.name).droppable({accept:"#editor .widget.object", hoverClass: "ui-state-highlight", drop: function(event, ui) { 
-				Data.addObject(namespace); 
-			}});
+var ModelTree = {
+	init:function() {
+		NotificationCenter.addObserver(ModelTree);
+		$$("modeltree").attachEvent("onBeforeDrag", function(ctx, evt) {
+			return ($$("modeltree").getItem(ctx.source).$level == 2);
+		});
 		
-		Tree.root.find(">.droppable").removeClass("empty").append(tpl.children()).accordion("refresh");
+		webix.event($$("modeltree").$view, "dragenter", function(e) {e.stopPropagation(); e.preventDefault();});
+		webix.event($$("modeltree").$view, "dragover", function(e) {e.stopPropagation(); e.preventDefault();});
+		webix.event($$("modeltree").$view, "drop", function(e) {e.stopPropagation(); e.preventDefault(); 
+			Data.upload(e.dataTransfer.files[0])});
 	},
-	onEventObjectAdded:function(info) {
-		var tpl = $("#tree_object_template").clone();
-		tpl.find(".draggable").draggable({revert:true, revertDuration:0, helper:"clone"});
-		tpl.find(">li> div span").text(info.object.name).attr("title", info.object.comment);
-		tpl.find(">li> ul").attr("id", "tree_" + info.namespace.name + "_" + info.object.name);
-		tpl.find(">li> ul li.constants").droppable({accept:"#editor .widget.constant", hoverClass: "ui-state-highlight", drop: function(event, ui) { 
-				Data.addConstant(info.namespace, info.object);
-			}});
-		tpl.find(">li> ul li.attributes").droppable({accept:"#editor .widget.attribute", hoverClass: "ui-state-highlight", drop: function(event, ui) {
-				Data.addAttribute(info.namespace, info.object);
-			}});
-
-		$("#tree_" + info.namespace.name).removeClass("empty").append(tpl.children());
+	onDataEventReset:function() {
+		$$("modeltree").clearAll();
 	},
-	onEventConstantAdded:function(info) {
-		var tpl = $("#tree_constant_template").clone();
-		tpl.find(".draggable").draggable({revert:true, revertDuration:0, helper:"clone"});
-		tpl.find(">li").attr("id", "tree_" + info.namespace.name + "_" + info.object.name + "_constants_" + info.constant.name);
-		tpl.find(">li span").text(info.constant.name).attr("title", info.constant.comment);
-
-		$("#tree_" + info.namespace.name + "_" + info.object.name + " > li.droppable.constants > ul").append(tpl.children());
+	onDataEventNamespaceAdded:function(namespace) {
+		$$("modeltree").add({value:namespace.name, icon:"namespace", id:"modeltree_" + namespace.name}, -1);
 	},
-	onEventAttributeAdded:function(info) {
-		var tpl = $("#tree_attribute_template").clone();
-		tpl.find(".draggable").draggable({revert:true, revertDuration:0, helper:"clone"});
-		tpl.find(">li").attr("id", "tree_" + info.namespace.name + "_" + info.object.name + "_attributes_" + info.attribute.name);
-		tpl.find(">li span").text(info.attribute.name).attr("title", info.attribute.comment);
-
-		$("#tree_" + info.namespace.name + "_" + info.object.name + " > li.droppable.attributes > ul").append(tpl.children());
+	onDataEventNamespaceRemoved:function(namespace) {
+		$$("modeltree").remove("modeltree_" + namespace.name);
 	},
-	onEventNamespaceRemoved:function(namespace) {
-		$("#tree_" + namespace.name).parent().prev().remove();
-		$("#tree_" + namespace.name).parent().remove();
-		Tree.root.find(">.droppable").accordion("refresh");
-		if (Tree.root.find(">.droppable > h3").length == 0) {
-			Tree.root.find(">.droppable").addClass("empty");
+	onDataEventObjectAdded:function(info) {
+		var item = $$("modeltree").getItem("modeltree_" + info.namespace.name);
+		if (item) {
+			var objectNodeId = $$("modeltree").add({id:"modeltree_" + info.namespace.name + "." + info.object.name, value:info.object.name, icon:"object"}, -1, item.id);
+			$$("modeltree").add({id:"modeltree_" + info.namespace.name + "." + info.object.name + ".constants", value:"Constants", icon:"constant"}, -1, objectNodeId);
+			$$("modeltree").add({id:"modeltree_" + info.namespace.name + "." + info.object.name + ".attributes", value:"Attributes", icon:"attribute"}, -1, objectNodeId);
+			$$("modeltree").open(item.id);
 		}
 	},
-	onEventObjectRemoved:function(info) {
-		var list = $("#tree_" + info.namespace.name + "_" + info.object.name).parent().parent();
-		$("#tree_" + info.namespace.name + "_" + info.object.name).parent().remove();
-		if (list.find("li").length == 0) {
-			list.addClass("empty");
+	onDataEventObjectRemoved:function(info) {
+		$$("modeltree").remove("modeltree_" + info.namespace.name + "." + info.object.name);
+	},
+	onDataEventConstantAdded:function(info) {
+		var item = $$("modeltree").getItem("modeltree_" + info.namespace.name + "." + info.object.name + ".constants");
+		if (item) {
+			$$("modeltree").add({id:"modeltree_" + info.namespace.name + "." + info.object.name + ".constant." + info.constant.name, value:info.constant.name, icon:info.constant.type.toLowerCase()}, -1, item.id);
+			$$("modeltree").open(item.id);
 		}
 	},
-	onEventConstantRemoved:function(info) {
-		$("#tree_" + info.namespace.name + "_" + info.object.name + "_constants_" + info.constant.name).remove();
+	onDataEventConstantRemoved:function(info) {
+		$$("modeltree").remove("modeltree_" + info.namespace.name + "." + info.object.name + ".constant." + info.constant.name);
 	},
-	onEventAttributeRemoved:function(info) {
-		$("#tree_" + info.namespace.name + "_" + info.object.name + "_attributes_" + info.attribute.name).remove();
+	onDataEventAttributeAdded:function(info) {
+		var item = $$("modeltree").getItem("modeltree_" + info.namespace.name + "." + info.object.name + ".attributes");
+		if (item) {
+			$$("modeltree").add({id:"modeltree_" + info.namespace.name + "." + info.object.name + ".attribute." + info.attribute.name, value:info.attribute.name, icon:info.attribute.type.toLowerCase()}, -1, item.id);
+			$$("modeltree").open(item.id);
+		}
 	},
-	onEventReset:function() {
-		Tree.root.find(">.droppable > *").remove();
-		Tree.root.find(">.droppable").addClass("empty");
+	onDataEventAttributeRemoved:function(info) {
+		$$("modeltree").remove("modeltree_" + info.namespace.name + "." + info.object.name + ".attribute." + info.attribute.name);
 	}
 };
+
+var WebTree = {
+	init:function() {
+		NotificationCenter.addObserver(WebTree);
+		$$("webtree").attachEvent("onSelectChange", function() {
+			NotificationCenter.post(Notification.WEB_TREE_EVENT_SELECT_CHANGED, $$("webtree").getSelectedItem());
+		});
+
+		$$("webtree").attachEvent("onBeforeDrop", function(ctx, evt) {
+			var sourceLevel = $$("webtree").getItem(ctx.source).$level;
+			var targetLevel = $$("webtree").getItem(ctx.target).$level;
+			if (sourceLevel != targetLevel) {
+				return false;
+			}
+			return ($$("webtree").getItem(ctx.source).$parent == $$("webtree").getItem(ctx.target).$parent);
+		});
+		$$("webtree").attachEvent("onAfterDrop", function(ctx, evt) {
+			var level = $$("webtree").getItem(ctx.source).$level;
+			if (level == 1) {
+				WebData.exchangeVersion($$("webtree").getItem(ctx.source).value, $$("webtree").getItem(ctx.target).value);
+			}
+			else if (level == 2) {
+				var version = WebData.findVersion($$("webtree").getItem($$("webtree").getItem(ctx.source).$parent).value);
+				WebData.exchangeInterface(version, $$("webtree").getItem(ctx.source).value, $$("webtree").getItem(ctx.target).value);
+			}
+		});
+		
+		webix.event($$("webtree").$view, "dragenter", function(e) {e.stopPropagation(); e.preventDefault();});
+		webix.event($$("webtree").$view, "dragover", function(e) {e.stopPropagation(); e.preventDefault();});
+		webix.event($$("webtree").$view, "drop", function(e) {e.stopPropagation(); e.preventDefault(); 
+			WebData.upload(e.dataTransfer.files[0])});
+
+		$$("webtree_popup").attachEvent("onItemClick", function(id) {
+			WebTree._onItemDelete(this.getContext().id);
+		});
+	},
+	onWebDataEventReset:function() {
+		$$("webtree").clearAll();
+	},
+	onWebDataEventVersionAdded:function(version) {
+		$$("webtree").add({value:version.name, icon:"version", id:"webtree_" + version.name}, -1);
+	},
+	onWebDataEventVersionRemoved:function(version) {
+		$$("webtree").remove("webtree_" + version.name);
+	},
+	onWebDataEventInterfaceAdded:function(info) {
+		var item = $$("webtree").getItem("webtree_" + info.version.name);
+		if (item) {
+			var objectNodeId = $$("webtree").add({id:"webtree_" + info.version.name + "." + info.interface.name, value:info.interface.name, icon:"interface"}, -1, item.id);
+			$$("webtree").open(item.id);
+		}
+	},
+	onWebDataEventInterfaceRemoved:function(info) {
+		$$("webtree").remove("webtree_" + info.version.name + "." + info.interface.name);
+	},
+	_onItemDelete: function(itemId) {
+		itemId = itemId.replace(/^webtree_/, "");
+		if (itemId.length > 0) {
+			var components = itemId.split(".");
+			switch(components.length) {
+				case 1:
+					WebData.removeVersion(components[0]);
+					break;
+				case 2:
+					WebData.removeInterface(components[0], components[1]);
+					break;
+			}
+		}
+	},
+	getSelectedVersion: function() {
+		var item = $$("webtree").getSelectedItem();
+		if (item) {
+			var level = item.$level;
+			while(level > 1) {
+				item = $$("webtree").getItem(item.$parent);
+				--level;
+			}
+			return WebData.findVersion(item.value);
+		}
+		return false;
+	}
+}

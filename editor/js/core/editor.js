@@ -1,352 +1,301 @@
 var Editor = {
-	root:false,
 	init: function() {
 		NotificationCenter.addObserver(Editor);
-		Editor.root = $("#editor");
-
-		Editor.root.find(">.droppable").droppable({accept:"#toolbar .widget",hoverClass:"ui-state-highlight", drop: Editor._onDrop});
-	},
-	onEventUiRemove:function(target) {
-		if (target.parents("#editor").length > 0) {
-			Editor.show(null);
-		}
-	},
-	onEventReset:function() {
-		Editor.show(null);
-	},
-	_onDrop: function(ui, evt) {
-		if (Toolbar.root.has(evt.draggable[0])) {
-			if (evt.draggable.hasClass("namespace")) {
-				Editor.show("namespace");
-			}
-			else if (evt.draggable.hasClass("object")) {
-				Editor.show("object");
-			}
-			else if (evt.draggable.hasClass("constant")) {
-				Editor.show("constant");
-			}
-			else if (evt.draggable.hasClass("attribute")) {
-				Editor.show("attribute");
-			}
-		}
-		else {
-			alert("NO");
-		}
-	},
-	show:function(editorName) {
-		Editor.root.find(">div>div").hide();
-		Editor.root.find(">h1>div").removeClass("namespace").removeClass("object").removeClass("constant").removeClass("attribute");
-		if (editorName) {
-			Editor.root.find(">div>div." + editorName).show();
-			Editor.root.find(">h1>span").text(editorName.charAt(0).toUpperCase() + editorName.slice(1));
-			Editor.root.find(">h1>div").addClass(editorName);
-			Editor.root.find(">div").removeClass("empty");
-			switch(editorName) {
-				case "namespace":
-					Editor.Namespace.init();
-					break;
-				case "object":
-					Editor.Object.init();
-					break;
-				case "constant":
-					Editor.Constant.init();
-					break;
-				case "attribute":
-					Editor.Attribute.init();
-					break;
-			}
-		}
-		else {
-			Editor.root.find(">h1>span").text("Getting Started");
-			Editor.root.find(">h1>div").removeClass("namespace").removeClass("object").removeClass("constant").removeClass("attribute");
-			Editor.root.find(">div").addClass("empty");
-		}
+		Editor.Namespace.init();
+		Editor.Object.init();
+		Editor.Constant.init();
+		Editor.Attribute.init();
 	},
 	Namespace: {
-		root: false,
 		init: function() {
-			Editor.Namespace.root = Editor.root.find(">div>div.namespace");
-			Editor.Namespace.root.find("input:text").val("");
-			Editor.Namespace.root.find("textarea").val("");
+			NotificationCenter.addObserver(Editor.Namespace);
+			$$("editor_namespace_button").attachEvent("onItemClick", Editor.Namespace._onSubmit);
 		},
-		getData: function() {
-			var name = Editor.Namespace.root.find("input:text").val();
-			var comment = Editor.Namespace.root.find("textarea").val();
-			if (name.length == 0) {
-				alert("name field cannot be left empty");
-				return false;
+		_onSubmit:function() {
+			var namespace = new UM.Namespace($$("editor_namespace_name").getValue(), $$("editor_namespace_comment").getValue(), []);
+			if (!namespace.name || (namespace.name.length == 0)) {
+				webix.message("name field cannot be empty");
+				return;
 			}
 
-			return new UM.Namespace(name, comment, []);
-	    }
+			if (Data.findNamespace(namespace.name)) {
+				webix.message("duplicated namespace");
+				return;
+			}
+			Data.addNamespace(namespace);
+		}
 	},
 	Object: {
-		root:false,
 		init: function() {
-			Editor.Object.root = Editor.root.find(">div>div.object");
-			Editor.Object.root.find("input:text").val("");
-			Editor.Object.root.find("textarea").val("");
+			NotificationCenter.addObserver(Editor.Object);
+			$$("editor_object_button").attachEvent("onItemClick", Editor.Object._onSubmit);
 		},
-		getData: function() {
-			var name = Editor.Object.root.find("input:text").val();
-			var comment = Editor.Object.root.find("textarea").val();
-			if (name.length == 0) {
-				alert("name field cannot be left empty");
-				return false;
+		_onSubmit:function() {
+			var object = new UM.Object($$("editor_object_name").getValue(), $$("editor_object_comment").getValue(), [], []);
+			if (!object.name || (object.name.length == 0)) {
+				webix.message("name field cannot be empty");
+				return;
 			}
 
-			return new UM.Object(name, comment, [], []);
+			var namespace = Tree.getSelectedNamespace();
+			if (!namespace || Data.findObject(namespace, object.name)) {
+				webix.message("duplicated object");
+				return;
+			}
+			Data.addObject(namespace, object);
+		},
+		onTreeEventSelectChanged:function(node) {
+			(node.$level == 1) ? $$("editor_object_button").enable() : $$("editor_object_button").disable();
 		}
 	},
 	Constant: {
-		root: false,
 		init: function() {
-			Editor.Constant.root = Editor.root.find(">div>div.constant");
-			Editor.Constant.root.find("input[type=text],input[type=number]").val("");
-			Editor.Constant.root.find("textarea").val("");
-			Editor.Constant.root.find("input:radio").prop("checked", false);
-
-			Editor.Constant.root.find(">ul>li:gt(5)").hide()
+			NotificationCenter.addObserver(Editor.Constant);
+			$$("editor_constant_type").attachEvent("onChange", Editor.Constant._onTypeChanged);
+			$$("editor_constant_button").attachEvent("onItemClick", Editor.Constant._onSubmit);
 		},
-		onTypeChanged: function() {
-			var target = Editor.Constant.root.find("input:radio:checked").val().toLowerCase();
-
-			Editor.Constant.root.find(">ul>li:gt(5)").show();
-			Editor.Constant.root.find(">ul>li:eq(7) > *").hide();
-			Editor.Constant.root.find(">ul>li:eq(7) > ." + target).show();
+		_onTypeChanged: function(newV, oldV) {
+			$$("editor_constant_value_" + oldV.toLowerCase()).hide();
+			$$("editor_constant_value_" + newV.toLowerCase()).show();
 		},
-		getData: function() {
-			if (Editor.Constant.root.find("input:radio:checked").length == 0) {
-				alert("no type specified");
-				return false;
+		_onSubmit:function() {
+			var constant = new UM.Constant($$("editor_constant_name").getValue(), $$("editor_constant_comment").getValue(), $$("editor_constant_type").getValue().toUpperCase(), null);
+			if (!constant.name || (constant.name.length == 0)) {
+				webix.message("name field cannot be empty");
+				return;
 			}
 
-			var name = Editor.Constant.root.find(">ul>li:eq(1) input:text").val();
-			var comment = Editor.Constant.root.find(">ul>li:eq(3) textarea").val();
-			var type = Editor.Constant.root.find("input:radio:checked").val();
-			var value = null;
-			switch(type) {
-				case "INTEGER":
-					value = parseInt(Editor.Constant.root.find(">ul>li:eq(7) > div.integer input").val()) || 0;
-					break;
-				case "FLOAT":
-					value = Editor.Constant.root.find(">ul>li:eq(7) > div.float input").val() * 1.0;
-					break;
-				case "BOOLEAN":
-					value = (Editor.Constant.root.find(">ul>li:eq(7) > div.boolean select option:selected").val() == "true") ? true : false;
-					break;
-				case "STRING":
-					value = Editor.Constant.root.find(">ul>li:eq(7) > div.string input").val();
-					break;
+			if (constant.type == "INTEGER") {
+				constant.value = parseInt($$("editor_constant_value_" + constant.type.toLowerCase()).getValue()) || 0;
 			}
-			if (name.length == 0) {
-				alert("name field cannot be left empty");
-				return false;
+			else if (constant.type == "FLOAT") {
+				constant.value = $$("editor_constant_value_" + constant.type.toLowerCase()).getValue() * 1.0;
 			}
-			if (value == null) {
-				alert("no default value");
-				return false;
+			else if (constant.type == "BOOLEAN") {
+				constant.value = ($$("editor_constant_value_" + constant.type.toLowerCase()).getValue() == "True") ? true : false;
 			}
-			return new UM.Constant(name, comment, type, value);
+			else if (constant.type == "STRING") {
+				constant.value = $$("editor_constant_value_" + constant.type.toLowerCase()).getValue();
+			}
+			else {
+				webix.message("select a type of constant first");
+				return;
+			}
+
+			var namespace = Tree.getSelectedNamespace();
+			var object = Tree.getSelectedObject();
+			if (!object || Data.findConstant(object, constant.name)) {
+				webix.message("duplicated constant");
+				return;
+			}
+			Data.addConstant(namespace, object, constant);
+		},
+		onTreeEventSelectChanged:function(node) {
+			((node.$level == 3) && (node.value == "Constants")) ? $$("editor_constant_button").enable() : $$("editor_constant_button").disable();
 		}
 	},
 	Attribute: {
-		root: false,
 		init: function() {
-			Editor.Attribute.root = Editor.root.find(">div>div.attribute");
-			Editor.Attribute.root.find("input[type=text],input[type=number]").val("");
-			Editor.Attribute.root.find("textarea").val("");
-			Editor.Attribute.root.find("input:radio").prop("checked", false);
-			Editor.Attribute.root.find("input:checkbox").prop("checked", false);
-
-			Editor.Attribute.root.find(".reference > .integer.droppable").droppable({accept:"#tree .widget.constant", hoverClass:"ui-state-highlight", drop: Editor.Attribute.onConstantReferenceDropped});
-			Editor.Attribute.root.find(".reference > .float.droppable").droppable({accept:"#tree .widget.constant", hoverClass:"ui-state-highlight", drop: Editor.Attribute.onConstantReferenceDropped});
-			Editor.Attribute.root.find(".reference > .boolean.droppable").droppable({accept:"#tree .widget.constant", hoverClass:"ui-state-highlight", drop: Editor.Attribute.onConstantReferenceDropped});
-			Editor.Attribute.root.find(".reference > .string.droppable").droppable({accept:"#tree .widget.constant", hoverClass:"ui-state-highlight", drop: Editor.Attribute.onConstantReferenceDropped});
-			Editor.Attribute.root.find(".reference > .object.droppable").droppable({accept:"#tree .widget.object", hoverClass:"ui-state-highlight", drop: Editor.Attribute.onObjectReferenceDropped});
-			Editor.Attribute.root.find(".reference > .array.droppable").droppable({accept:"#tree .widget.object", hoverClass:"ui-state-highlight", drop: Editor.Attribute.onObjectReferenceDropped});
-
-			Editor.Attribute.root.find(">ul>li:gt(5)").hide();
+			NotificationCenter.addObserver(Editor.Attribute);
+			$$("editor_attribute_type").attachEvent("onChange", Editor.Attribute._onTypeChanged);
+			$$("editor_attribute_is_reference").attachEvent("onChange", Editor.Attribute._onIsReferenceChanged);
+			$$("editor_attribute_use_filter").attachEvent("onChange", Editor.Attribute._onUseFilterChanged);
+			$$("editor_attribute_button").attachEvent("onItemClick", Editor.Attribute._onSubmit);
+			webix.DragControl.addDrop($$("editor_attribute_value_reference_object").$view,{
+			        $drop:function(source, target, context){
+			         	var dnd = webix.DragControl.getContext();
+			         	var components = dnd.source[0].replace(/^tree_/, "").split(".");
+			         	if (components.length == 2) {
+			         		$$("editor_attribute_value_reference_object").setValue(components[0] + "." + components[1]);
+			         	}
+			        }
+			});
+			webix.DragControl.addDrop($$("editor_attribute_value_reference_constant").$view,{
+			        $drop:function(source, target, context){
+			           	var dnd = webix.DragControl.getContext();
+			         	var components = dnd.source[0].replace(/^tree_/, "").split(".");
+			         	if ((components.length == 4) && (components[2].toLowerCase() == "constant")) {
+			         		var namespace = Data.findNamespace(components[0]);
+			         		var object = Data.findObject(namespace, components[1]);
+			         		var constant = Data.findConstant(object, components[3]);
+			         		if (constant && constant.type == $$("editor_attribute_type").getValue().toUpperCase()) {
+			         			$$("editor_attribute_value_reference_constant").setValue(components[0] + "." + components[1] + "." + components[3]);
+			         		}
+			         		else {
+			         			webix.message("type mismatch");
+			         		}
+			         	}
+			        }
+			});
 		},
-		onConstantReferenceDropped:function(ui, evt) {
-			var components = evt.draggable.parent().attr("id").split("_");
-			var namespace = Data.findNamespace(components[1]);
-			var object = Data.findObject(namespace, components[2]);
-			var constant = Data.findConstant(namespace, object, components[4]);
-
-			$(ui.target).text(namespace.name + "." + object.name + "." + constant.name);
-			$(ui.target).removeClass("empty");
-		},
-		onObjectReferenceDropped:function(ui, evt) {
-			var components = evt.draggable.parent().next().attr("id").split("_");
-			var namespace = Data.findNamespace(components[1]);
-			var object = Data.findObject(namespace, components[2]);
-
-			$(ui.target).text(namespace.name + "." + object.name);
-			$(ui.target).removeClass("empty");
-		},
-		onTypeChanged: function() {
-			var target = Editor.Attribute.root.find("input:radio:checked").val();
-			Editor.Attribute.root.find(">ul>li:gt(5)").hide();
-			switch(target) {
-				case "INTEGER":
-				case "FLOAT":
-				case "STRING":
-					Editor.Attribute.root.find(">ul>li:gt(5)").show();
-					Editor.Attribute.root.find(">ul>li:eq(6) input[type=checkbox]").prop("checked", false);
-					Editor.Attribute.root.find(">ul>li:eq(6) input[type=checkbox]").prop("disabled", false);
-					Editor.Attribute.onReferenceChanged();
-					Editor.Attribute.root.find(">ul>li:eq(8) input[type=checkbox]").prop("disabled", false);
-					Editor.Attribute.root.find(">ul>li:eq(8) input[type=checkbox]").prop("checked", false);
-					Editor.Attribute.onFilterChanged();
-					break;
-				case "BOOLEAN":
-					Editor.Attribute.root.find(">ul>li:gt(5)").show();
-					Editor.Attribute.root.find(">ul>li:eq(6) input[type=checkbox]").prop("checked", false);
-					Editor.Attribute.root.find(">ul>li:eq(6) input[type=checkbox]").prop("disabled", false);
-					Editor.Attribute.onReferenceChanged();
-					Editor.Attribute.root.find(">ul>li:gt(7)").hide();
-					break;
-				case "OBJECT":
-				case "ARRAY":
-					Editor.Attribute.root.find(">ul>li:gt(5)").show();
-					Editor.Attribute.root.find(">ul>li:eq(6) input[type=checkbox]").prop("checked", true);
-					Editor.Attribute.root.find(">ul>li:eq(6) input[type=checkbox]").prop("disabled", true);
-					Editor.Attribute.onReferenceChanged();
-					Editor.Attribute.root.find(">ul>li:gt(7)").hide();
-					break;
-			}
-		},
-		onReferenceChanged: function() {
-			var target = Editor.Attribute.root.find("input:radio:checked").val();
-			if (Editor.Attribute.root.find(">ul>li:eq(6) input[type=checkbox]").prop("checked")) {
-				Editor.Attribute.root.find(">ul>li:eq(7) > div.value").hide();
-				Editor.Attribute.root.find(">ul>li:eq(7) > div.reference").show();
-				Editor.Attribute.root.find(">ul>li:eq(7) > div.reference > *").hide();
-				Editor.Attribute.root.find(">ul>li:eq(7) > div.reference > ." + target.toLowerCase()).show();
+		_onTypeChanged: function(newV, oldV) {
+			if ((newV == "Object") || (newV == "Array")) {
+				$$("editor_attribute_is_reference").setValue(1);
+				$$("editor_attribute_is_reference").disable();
 			}
 			else {
-				Editor.Attribute.root.find(">ul>li:eq(7) > div.reference").hide();
-				Editor.Attribute.root.find(">ul>li:eq(7) > div.value").show();
-				Editor.Attribute.root.find(">ul>li:eq(7) > div.value > *").hide()
-				Editor.Attribute.root.find(">ul>li:eq(7) > div.value > ." + target.toLowerCase()).show();
+				$$("editor_attribute_is_reference").enable();
 			}
-		},
-		onFilterChanged: function() {
-			var target = Editor.Attribute.root.find("input:radio:checked").val();
-			if (Editor.Attribute.root.find(">ul>li:eq(8) input[type=checkbox]").prop("checked")) {
-				Editor.Attribute.root.find(">ul>li:eq(9)").show();
-				Editor.Attribute.root.find(">ul>li:eq(9) > *").hide();
-				Editor.Attribute.root.find(">ul>li:eq(9) > ." + target.toLowerCase()).show();
+
+			var targetId = "";
+			var isReference = ($$("editor_attribute_is_reference").getValue() == 1);
+			switch(newV) {
+				case "Integer":
+				case "Float":
+				case "Boolean":
+				case "String":
+					targetId = isReference ? "editor_attribute_value_reference_constant" : "editor_attribute_value_" + newV.toLowerCase();
+					break;
+				case "Object":
+				case "Array":
+					targetId = "editor_attribute_value_reference_object";
+					break;
+			}
+
+			$$(targetId).show();
+			["editor_attribute_value_integer", "editor_attribute_value_float", "editor_attribute_value_boolean", "editor_attribute_value_string", "editor_attribute_value_reference_object", "editor_attribute_value_reference_constant"].forEach(function(element) {
+				if (element != targetId) {
+					$$(element).hide();
+				}
+			});
+
+			if ((newV == "Integer") || (newV == "Float") || (newV == "String")) {
+				$$("editor_attribute_use_filter").show();
 			}
 			else {
-				Editor.Attribute.root.find(">ul>li:eq(9)").hide();
+				$$("editor_attribute_use_filter").hide();
+				$$("editor_attribute_use_filter").setValue(false);
 			}
+			Editor.Attribute._onUseFilterChanged($$("editor_attribute_use_filter").getValue(), false);
 		},
-		getData: function() {
-			if (Editor.Attribute.root.find("input:radio:checked").length == 0) {
-				alert("no type specified");
-				return false;
+		_onIsReferenceChanged:function(newV, oldV) {
+			var targetId = "";
+			var type = $$("editor_attribute_type").getValue();
+			switch(type) {
+				case "Integer":
+				case "Float":
+				case "Boolean":
+				case "String":
+					targetId = newV ? "editor_attribute_value_reference_constant" : "editor_attribute_value_" + type.toLowerCase();
+					break;
+				case "Object":
+				case "Array":
+					targetId = "editor_attribute_value_reference_object";
+					break;
 			}
+			$$(targetId).show();
+			["editor_attribute_value_integer", "editor_attribute_value_float", "editor_attribute_value_boolean", "editor_attribute_value_string", "editor_attribute_value_reference_object", "editor_attribute_value_reference_constant"].forEach(function(element) {
+				if (element != targetId) {
+					$$(element).hide();
+				}
+			});
 
-			var name = Editor.Attribute.root.find(">ul>li:eq(1) input:text").val();
-			var comment = Editor.Attribute.root.find(">ul>li:eq(3) textarea").val();
-			var type = Editor.Attribute.root.find("input:radio:checked").val();
-			var value = null;
-			var isReference = Editor.Attribute.root.find(">ul>li:eq(6) input:checkbox").prop("checked");
-			var hasFilter = Editor.Attribute.root.find(">ul>li:eq(8) input:checkbox").prop("checked");
-
-			if (isReference) {
+			if ((type == "Integer") || (type == "Float") || (type == "String")) {
+				$$("editor_attribute_use_filter").show();
+			}
+			else {
+				$$("editor_attribute_use_filter").hide();
+				$$("editor_attribute_use_filter").setValue(false);
+			}
+			Editor.Attribute._onUseFilterChanged($$("editor_attribute_use_filter").getValue(), false);
+		},
+		_onUseFilterChanged:function(newV, oldV) {
+			if (newV) {
+				var type = $$("editor_attribute_type").getValue();
 				switch(type) {
-					case "OBJECT":
-					case "ARRAY":
-						value = Editor.Attribute._parseObjectReference(Editor.Attribute.root.find(">ul>li:eq(7) > div.reference > ." + type.toLowerCase()));
+					case "Integer":
+					case "Float":
+						$$("editor_attribute_filter_range").show();
+						$$("editor_attribute_filter_regex").hide();
 						break;
 					default:
-						value = Editor.Attribute._parseConstantReference(Editor.Attribute.root.find(">ul>li:eq(7) > div.reference > ." + type.toLowerCase()));
+						$$("editor_attribute_filter_regex").show();
+						$$("editor_attribute_filter_range").hide();
 						break;
 				}
 			}
 			else {
-				switch(type) {
-					case "INTEGER":
-						value = parseInt(Editor.Attribute.root.find(">ul>li:eq(7) > div.value > input.integer").val()) || 0;
-						break;
-					case "FLOAT":
-						value = Editor.Attribute.root.find(">ul>li:eq(7) > div.value > input.float").val() * 1.0;
-						break;
-					case "BOOLEAN":
-						value = (Editor.Attribute.root.find(">ul>li:eq(7) > div.value > select.boolean option:selected").val() == "true") ? true : false;
-						break;
-					case "STRING":
-						value = Editor.Attribute.root.find(">ul>li:eq(7) > div.value > input.string").val();
-						break;
-					}
+				$$("editor_attribute_filter_regex").hide();
+				$$("editor_attribute_filter_range").hide();
+			}
+		},
+		_onSubmit:function() {
+			var attribute = new UM.Attribute($$("editor_attribute_name").getValue(), $$("editor_attribute_comment").getValue(), $$("editor_attribute_type").getValue().toUpperCase(), null, null);
+			if (!attribute.name || (attribute.name.length == 0)) {
+				webix.message("name field cannot be empty");
+				return;
 			}
 
-			var filter = null;
-			if (hasFilter) {
-				switch(type) {
-					case "INTEGER":
-						var includeLower = (Editor.Attribute.root.find(">ul>li:eq(9) > div.integer > select:first option:selected").val() == '[');
-						var includeUpper = (Editor.Attribute.root.find(">ul>li:eq(9) > div.integer > select:last option:selected").val() == ']');
-						var rangeLower = parseInt(Editor.Attribute.root.find(">ul>li:eq(9) > div.integer > input:first").val()) || 0;
-						var rangeUpper = parseInt(Editor.Attribute.root.find(">ul>li:eq(9) > div.integer > input:last").val()) || 0;
-						filter = {
-							range:{
-								lower:rangeLower,
-								upper:rangeUpper
-							},
-							include:{
-								lower:includeLower,
-								upper:includeUpper
-							}
-						};
-						break;
-					case "FLOAT":
-						var includeLower = (Editor.Attribute.root.find(">ul>li:eq(9) > div.float > select:first option:selected").val() == '[');
-						var includeUpper = (Editor.Attribute.root.find(">ul>li:eq(9) > div.float > select:last option:selected").val() == ']');
-						var rangeLower = Editor.Attribute.root.find(">ul>li:eq(9) > div.float > input:first").val() * 1.0;
-						var rangeUpper = Editor.Attribute.root.find(">ul>li:eq(9) > div.float > input:last").val() * 1.0;
-						filter = {
-							range:{
-								lower:rangeLower,
-								upper:rangeUpper
-							},       
-							include:{
-								lower:includeLower,
-								upper:includeUpper
-							}
-						};
-						break;
-					case "STRING":
-						filter = Editor.Attribute.root.find(">ul>li:eq(9) > div.string > input").val();
-						break;
+			var isReference = ($$("editor_attribute_is_reference").getValue() == 1);
+			var useFilter = ($$("editor_attribute_use_filter").getValue() == 1);
+
+			if (isReference) {
+				if ((attribute.type == "INTEGER") || (attribute.type == "FLOAT") || (attribute.type == "BOOLEAN") || (attribute.type == "STRING")) {
+					if ($$("editor_attribute_value_reference_constant").getValue() == "") {
+						webix.message("value incomplete");
+						return;
+					}
+					var components = $$("editor_attribute_value_reference_constant").getValue().split(".");
+					attribute.value = {namespace: components[0], object: components[1], constant: components[2]};
+				}
+				else {
+					if ($$("editor_attribute_value_reference_object").getValue() == "") {
+						webix.message("value incomplete");
+						return;
+					}
+					var components = $$("editor_attribute_value_reference_object").getValue().split(".");
+					attribute.value = {namespace: components[0], object: components[1]};
 				}
 			}
-			if (name.length == 0) {
-				alert("name field cannot be left empty");
-				return false;
+			else {
+				if (attribute.type == "INTEGER") {
+					attribute.value = parseInt($$("editor_attribute_value_" + attribute.type.toLowerCase()).getValue()) || 0;
+				}
+				else if (attribute.type == "FLOAT") {
+					attribute.value = $$("editor_attribute_value_" + attribute.type.toLowerCase()).getValue() * 1.0;
+				}
+				else if (attribute.type == "BOOLEAN") {
+					attribute.value = ($$("editor_attribute_value_" + attribute.type.toLowerCase()).getValue() == "True") ? true : false;
+				}
+				else if (attribute.type == "STRING") {
+					attribute.value = $$("editor_attribute_value_" + attribute.type.toLowerCase()).getValue();
+				}
+				else {
+					webix.message("select a type of attribute first");
+					return;
+				}
 			}
-			if (value == null) {
-				alert("no value specified");
-				return false;
+
+			if (useFilter) {
+				if (attribute.type == "INTEGER") {
+					var lowerInclude = ($$("editor_attribute_filter_range_lower_include").getValue() == "[") ? true : false;
+					var lowerRange = parseInt($$("editor_attribute_filter_range_lower_range").getValue());
+					var upperInclude = ($$("editor_attribute_filter_range_upper_include").getValue() == "]") ? true : false;
+					var upperRange = parseInt($$("editor_attribute_filter_range_upper_range").getValue());
+					attribute.filter = {include:{lower:lowerInclude, upper:upperInclude}, range:{lower:lowerRange, upper:upperRange}};
+				}
+				else if (attribute.type == "FLOAT") {
+					var lowerInclude = ($$("editor_attribute_filter_range_lower_include").getValue() == "[") ? true : false;
+					var lowerRange = $$("editor_attribute_filter_range_lower_range").getValue() * 1.0
+					var upperInclude = ($$("editor_attribute_filter_range_upper_include").getValue() == "]") ? true : false;
+					var upperRange = $$("editor_attribute_filter_range_upper_range").getValue() * 1.0;
+					attribute.filter = {include:{lower:lowerInclude, upper:upperInclude}, range:{lower:lowerRange, upper:upperRange}}; 
+				}
+				else if (attribute.type == "STRING") {
+					attribute.filter = $$("editor_attribute_filter_regex").getValue();
+				}
 			}
-			return new UM.Attribute(name, comment, type, value, filter);
+
+			var namespace = Tree.getSelectedNamespace();
+			var object = Tree.getSelectedObject();
+			if (!object || Data.findAttribute(object, attribute.name)) {
+				webix.message("duplicated attribute");
+				return;
+			}
+			Data.addAttribute(namespace, object, attribute);
 		},
-		_parseObjectReference: function(target) {
-			var target = target.text().split('.');
-			if (target.length != 2) {
-				return false;
-			}
-			return {namespace:target[0], object:target[1]};
-		},
-		_parseConstantReference: function(target) {
-			var target = target.text().split('.');
-			if (target.length != 3) {
-				return false;
-			}
-			return {namespace:target[0], object:target[1], constant:target[2]};
+		onTreeEventSelectChanged:function(node) {
+			((node.$level == 3) && (node.value == "Attributes")) ? $$("editor_attribute_button").enable() : $$("editor_attribute_button").disable();
 		}
 	}
 };

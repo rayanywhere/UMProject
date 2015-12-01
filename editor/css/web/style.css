@@ -1,0 +1,13 @@
+.webix_tree_version {
+	background-image: url("/images/web/version.png");
+	background-size: contain;
+	width: 20px;
+	height: 20px;
+}
+
+.webix_tree_interface {
+	background-image: url("/images/web/interface.png");
+	background-size: contain;
+	width: 20px;
+	height: 20px;
+}

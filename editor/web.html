@@ -1,160 +1,145 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="EN" lang="EN" dir="ltr">
-<head profile="http://gmpg.org/xfn/11">
-<title>Project UModel | The "U" Solution for data modeling world</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta http-equiv="imagetoolbar" content="no" />
-<link rel="stylesheet" href="css/style-web.css" type="text/css" />
-<link rel="stylesheet" href="js/jquery-ui/themes/smoothness/jquery-ui.css" type="text/css" />
-<script type="text/javascript" src="js/jquery.min.js"></script>
-<script type="text/javascript" src="js/jquery-ui/jquery-ui.min.js"></script>
-<script type="text/javascript" src="js/file.js"></script>
-<script type="text/javascript" src="js/notification_center.js"></script>
-<script type="text/javascript" src="js/data.js"></script>
-<script type="text/javascript" src="js/web/data.js"></script>
-<script type="text/javascript" src="js/web/toolbar.js"></script>
-<script type="text/javascript" src="js/web/editor.js"></script>
-<script type="text/javascript" src="js/web/list.js"></script>
-<script type="text/javascript" src="js/web/tree.js"></script>
-<script>
-	$(function() {
+<!DOCTYPE HTML>
+<html>
+		<head>
+		<link rel="stylesheet" type="text/css" href="/js/webix/webix.css">
+		<link rel="stylesheet" type="text/css" href="/css/core/style.css">
+		<link rel="stylesheet" type="text/css" href="/css/web/style.css">
+		<script type="text/javascript" src="/js/webix/webix_debug.js"></script>
+		<script type="text/javascript" src="/js/notification_center.js"></script>
+		<script type="text/javascript" src="/js/core/data.js"></script>
+		<script type="text/javascript" src="/js/web/data.js"></script>
+		<script type="text/javascript" src="/js/web/editor.js"></script>
+		<script type="text/javascript" src="/js/web/tree.js"></script>
+		<script type="text/javascript" src="/js/file.js"></script>
+		<script type="text/javascript">
+			webix.ready(function(){
 				Data.init();
-				WebData.init();
-				Toolbar.init();	
 				Editor.init();
-				List.init();
-				Tree.init();
-				$(".widget.draggable").draggable({revert:true, revertDuration:0, helper:"clone"});
+				ModelTree.init();
+				WebTree.init();
 			});
-</script>
-</head>
-<body>
-<!-- ####################################################################################################### -->
-<div class="wrapper col1">
-	<div id="header">
-		<div id="logo">
-			<h1><a href="#">Project UModel</a></h1>
-			<p>The "U" Solution for data modeling world</p>
-		</div>
-		<div id="topnav">
-			<ul>
-				<li><a href="core.html">Core</a></li>
-				<li class="active"><a href="web.html">Web</a></li>
-				<li class="last"><a href="javascript:void(0)">Database</a></li>
-			</ul>
-		</div>
-		<br class="clear" />
-	</div>
-</div>
-<!-- ####################################################################################################### -->
-<div class="wrapper col2">
-	<div id="toolbar">
-		<div class="widget version float-left draggable" title="version"></div>
-		<div class="widget interface float-left draggable" title="interface"></div>
-		<div class="widget trash float-right" title="trash"></div>
-		<div class="widget transfer float-right" title="transfer"></div>
-	</div>
-</div>
-<!-- ####################################################################################################### -->
-<div class="wrapper col3">
-	<div id="container">
-		<div id="editor">
-			<h1><span>Getting Started</span><div class="widget draggable"></div></h1>
-			<div class="ui-corner-all droppable empty">
-				<div class="version" style="display:none;">
-					<ul>
-						<li class="label">Name</li>
-						<li><input type="text" placeholder="Name of the version"/></li>
-						<li class="label">Comment</li>
-						<li><textarea placeholder="No comment"></textarea></li>
-					</ul>
-				</div>
-				<div class="interface" style="display:none;">
-					<ul>
-						<li class="label">Name</li>
-						<li><input type="text" placeholder="Name of the interface"/></li>
-						<li class="label">Comment</li>
-						<li><textarea placeholder="No comment"></textarea></li>
-						<li class="label">Address</li>
-						<li><input type="text" placeholder="Protocol" style="width:60px"><span>://</span><input type="text" placeholder="Host" /><span>:</span><input type="number" placeholder="Port" style="width:40px"/></li>
-						<li class="label">Timeout</li>
-						<li><input type="number" placeholder="Infinite" style="width:40px"/><span>(sec)</span></li>
-						<li class="label">Request & Response</li>
-						<li><div class="request droppable small empty"></div><span class="ui-icon ui-icon-transferthick-e-w"></span><div class="response droppable small empty"></div></li>
-					</ul>
-				</div>
-			</div>
-			<div id="list">
-				<h1><span>List of Versions & Interfaces</span><div class="widget draggable data"></div></h1>
-				<div class="ui-corner-all droppable empty">
-				</div>
-			</div>
-		</div>
-		<div id="tree">
-			<h2><span>Model Tree Layout</span></h2>
-			<div class="droppable empty"></div>
-		</div>
-		<div class="clear"></div>
-	</div>
-</div>
-<!-- ####################################################################################################### -->
-<div class="wrapper col4">
-	<div id="copyright">
-		<p class="center">Copyright &copy; 2015 Vanchu - All Rights Reserved - <a href="#">Vanchu Technology Team</a></p>
-		<br class="clear" />
-	</div>
-</div>
-<div class="templates hidden" style="display:none;">
-	<div id="list_version_template">
-		<h3>
-			<div class="widget version draggable"></div><span></span>
-		</h3>
-		<div style="padding:0">
-			<ul class="droppable empty"></ul>
-		</div>
-	</div>
-	<div id="list_interface_template">
-		<li>
-			<div class="widget version draggable"></div><span></span>
-		</li>
-	</div>
-	<div id="tree_namespace_template">
-		<h3>
-			<div class="widget namespace draggable"></div><span></span>
-		</h3>
-		<div>
-			<ul class="droppable empty"></ul>
-		</div>
-	</div>
-	<div id="tree_object_template">
-		<li>
-			<div>
-				<div class="ui-icon ui-icon-triangle-1-e" onclick="Tree.toggleDisplay($(this),$(this.parentNode.parentNode))"></div><div class="widget object draggable"></div><span>Object</span>
-			</div>
-			<ul style="display:none;">
-				<li class="droppable constants">
-					<div>
-						<div class="ui-icon ui-icon-triangle-1-e" onclick="Tree.toggleDisplay($(this),$(this.parentNode.parentNode))"></div><div class="widget constant"></div><span>Constants</span>
-					</div>
-					<ul style="display:none;">
-					</ul>
-				</li>
-				<li class="droppable attributes">
-					<div>
-						<div class="ui-icon ui-icon-triangle-1-e" onclick="Tree.toggleDisplay($(this),$(this.parentNode.parentNode))"></div><div class="widget attribute"></div><span>Attributes</span>
-					</div>
-					<ul style="display:none;">
-					</ul>
-				</li>
-			</ul>
-		</li>
-	</div>
-	<div id="tree_constant_template">
-		<li><div class="ui-icon ui-icon-blank"></div><div class="widget constant draggable"></div><span>Constant Item</span></li>
-	</div>
-	<div id="tree_attribute_template">
-		<li><div class="ui-icon ui-icon-blank"></div><div class="widget attribute draggable"></div><span>Attribute Item</span></li>
-	</div>
-</div>
-</body>
+		</script>
+		</head>
+		<body>
+				<script type="text/javascript" charset="utf-8">
+				webix.ui({
+					rows:[
+						{
+							view:"toolbar",
+							cols:[
+								{view:"label", label:"Project UModel"},
+								{view:"button", label: 'Core', width:100, align:"right", click:"window.location.href='/core.html'"},
+								{view:"button", type:"form", label:"Web", width:100, align:"right"},
+								{view:"button", label:"Database", width:100, align:"right"}
+							]
+						},
+						{
+							view:"toolbar",
+							cols:[
+								{},
+								{view:"icon", icon:"download", width:60, align:"right", click:"WebData.download();"}
+							]
+						},
+						{
+							type:"space",
+							cols:[
+								{
+									view:"tabview",
+									minWidth:600,
+									cells:[
+										{
+											header:"Version",
+											body:{
+												view:"form",
+												elements:[
+													{
+														cols:[
+															{id:"editor_version_name", view:"text", placeholder:"No name", label:"Name", inputWidth:300},
+															{}
+														]
+													},
+													{id:"editor_version_comment", view:"textarea", placeholder:"No comment", label:"Comment", height:100},
+													{id:"editor_version_button", view:"button", align:"center", value:"Add to Interface Layout Tree"},
+													{}
+												]
+											}
+										},
+										{
+											header:"Interface",
+											body:{
+												view:"form",
+												elements:[
+													{
+														cols:[
+															{id:"editor_interface_name", view:"text", placeholder:"No name", label:"Name", inputWidth:300},
+															{}
+														]
+													},
+													{id:"editor_interface_comment", view:"textarea", placeholder:"No comment", label:"Comment", height:100},
+													{
+														cols:[
+															{view:"label", label:"Address", width:80},
+															{id:"editor_interface_protocol", view:"select", options:["https", "http"], width:80},
+															{view:"label", label:"://", width:20},
+															{id:"editor_interface_host", view:"text", placeholder:"host"},
+															{view:"label", label:":", width:10},
+															{id:"editor_interface_port", view:"text", placeholder:"port", width:60}
+														]
+													},
+													{id:"editor_interface_timeout", view:"counter", label:"Timeout"},
+													{
+														cols:[
+															{id:"editor_interface_request", view:"text", disabled:true, label:"Request", placeholder:"Request Object", inputWidth:400, drag:"target", align:"left"},
+															{view:"label", label:"<==>", width:30, align:"center"},
+															{id:"editor_interface_response", view:"text", disabled:true, label:"Response", placeholder:"Response Object", inputWidth:400, drag:"target", align:"right"}
+														]
+													},
+													{id:"editor_interface_button", view:"button", align:"center", value:"Add to Interface Layout Tree", disabled:true},
+													{}
+												]
+											}
+										}
+									]
+								},
+								{
+									view: "resizer"
+								},
+								{
+									width:200,
+									minHeight:500,
+									rows:[
+										{view:"template", template:"<div style='text-align:center'>Model Layout</div>", type:"header"},
+										{id:"modeltree", drag:true, select:true, view:"tree", type:"lineTree", data:[]}
+									]
+								},
+								{
+									view: "resizer"
+								},
+								{
+									width:200,
+									minHeight:500,
+									rows:[
+										{view:"template", template:"<div style='text-align:center'>Interface Layout</div>", type:"header"},
+										{id:"webtree", drag:true, select:true, view:"tree", type:"lineTree", data:[]}
+									]
+								}
+							]
+						},
+						{
+							view:"template",
+							height:30,
+							id:"footer"
+						}
+					]
+				});
+				webix.ui({
+					view:"contextmenu",
+					id:"webtree_popup",
+					data:[
+						{value:"Delete"}
+					],
+					master:$$("webtree")
+				});
+				</script>
+		</body>
 </html>
